@@ -1,0 +1,76 @@
+Dear audio friends,
+
+the last time I wrote you (one month ago) I annunced that I 
+will have two very good speakers at home, trying to remove from 
+my living room my old and loved ProAC Response 1S bookshelf.
+The two candidates are the Living Voice Avatar (4000 GBP) and 
+the "enfant prodige" Acoustic Zen Adagio (4300 US$). Both are 
+standing speakers with 2 ways and double woofer in D'Appolito
+configuration (see first picture). The main difference is that
+the Avatar have a bass reflex and higher sensitivity, while the
+Adagio are loaded in a trasmission line (like the Thor project,
+but with the port on the front side) and have "only" 89 dB.
+Another difference is that the Adagio uses "special" drivers. 
+
+What I'm going to say in  describing how they sound is something
+that is strongly biased from 3 subjective conditions: 1) my 
+living room 2) my system (in particular my power amplifier, which
+is a C-J push-pull of EL34 in pseudotriode with only 22 W and
+only one output - thought for 8 Ohm) 3) my personal taste!
+
+The Living Voice Avatar were really happy with the 22 W of my
+EL34. The bass was deeper and louder than that of my ProAC 
+(of course), but also the high frequencies were more detailed
+and clear. On the other hand, the midrange of my Response 1S 
+was more natural and realistic, in particular with male voices.
+But what I have found to be the most impressive performance
+of the Avatar is the soundstage: really incredible!
+I think that the asymmetric (toward inside) tweeter position
+and a very "clean" crossover must be the oring of such a
+great scene.
+
+The Adagio are really something expecial: the woofers are ceramic
+with "under-hung" coile (to reduce distorsion), while the tweeter
+is a custom circular ribbon, which plays from 3 kHz up to... heaven!
+When you first listen them you are shot by their resolution,
+un-distorsion and... bass clearness. This trasmission line bass
+is not only deep and loud (see diagram 1, made at 1.2m), but first 
+of all it is "realistic", something which you can't find easily.
+
+Are the Adagio the perfect speakers, at leas at "human" price?  
+Well, I'm not sure. The soundstage is very good but not as the 
+Avatar, the midrange is very clear but not so natural as my Responce
+1S, the resolution is wonderfull but not so unbelivable as the 
+Audiostatic ES-300, which I proved in my room few months ago...
+The big deal of the Adagio is that they are close to the "best 
+of the class" in almost every parameter: all that is ONE speaker!
+
+In any case, the Adagio are not speakers for everyone: first of
+all their high resolution demands that all your system must be
+"correct". You will able to listen even a bit "colored" cable
+being in the signal path (Ehi boys: Acoustic Zen is a "cable 
+company" which developed this speaker as a testing instrument!).
+Second, they have a constant impedance (see the "straight" diagram
+2!), but I measured it closer to 5 than 6 Ohm and not all the
+tube amplifiers will enjoy it (300B in particular?).
+Third, the tweeter starts to play music after 2/3 hours of use,
+but that is probably true for all ribbons. Fourth, they are quite 
+linear, while some people could prefere a more "characterized" 
+response...
+So, if you are not prepared to put in discussion all your system, 
+then don't be as fool like me and don't bring at home an Adagio 
+sample "just for a trial", because probably you will not able to 
+remove them and your wife will not be very happy this Christmas 
+(see the last picture...)!
+
+	With my very best Christmass whishes!
+
+		Tino
+
+P.S. I wrote to Acoustic Zen about the "midrange not perfect"
+issue and Robert Lee answered me that he can try to do 
+something, so, if you are interested, may be that I will
+update you in future...
+
+P.P.S. If you don't want to receive anymore similar email 
+just let me know...

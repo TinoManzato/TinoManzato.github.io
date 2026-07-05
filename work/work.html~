@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
+	<META NAME="CREATED" CONTENT="20070505;16583864">
+	<META NAME="CHANGED" CONTENT="20070816;21283803">
+	<STYLE>
+	<!--
+		@page { size: 21.01cm 29.69cm; margin: 2.01cm }
+		TD P { margin-bottom: 0.2cm }
+		P { margin-bottom: 0.2cm }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-GB" DIR="LTR">
+<P ALIGN=LEFT><BR><BR>
+</P>
+<TABLE WIDTH=743 BORDER=1 CELLPADDING=2 CELLSPACING=3 BGCOLOR="#cccc99">
+	<COL WIDTH=731>
+	<TR>
+		<TD WIDTH=731 BGCOLOR="#cccc99">
+			<P ALIGN=LEFT><IMG SRC="tino_zebra.jpg" NAME="graphics1" ALIGN=RIGHT WIDTH=302 HEIGHT=338 BORDER=0><FONT SIZE=6><FONT COLOR="#008000">Agostino
+			Manzato</FONT></FONT> 
+			</P>
+			<P ALIGN=LEFT>Physicist, Meteorologist <BR>working at the Regional
+			Observatory of Friuli Venezia Giulia<BR><A HREF="http://www.osmer.fvg.it/">OSMER-ARPA
+			FVG</A>&nbsp; <BR>via Oberdan, 16/A&nbsp; <BR>I-33040 Visco (UD)&nbsp;
+			<BR>ITALY&nbsp; 
+			</P>
+			<P ALIGN=LEFT>TEL&nbsp;&nbsp;&nbsp; +39 0432 934163&nbsp; <BR>FAX&nbsp;&nbsp;
+			+39 0432 934100&nbsp; 
+			</P>
+			<P ALIGN=LEFT>e-mail agostino.manzato_at_osmer.fvg.it 
+			</P>
+			<P ALIGN=LEFT><BR>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+<P ALIGN=LEFT><BR><BR>
+</P>
+<TABLE WIDTH=743 BORDER=1 CELLPADDING=2 CELLSPACING=3 BGCOLOR="#cccc99">
+	<COL WIDTH=731>
+	<TR>
+		<TD WIDTH=731 BGCOLOR="#cccc99">
+			<P><B>Main activities</B> 
+			</P>
+			<UL>
+				<LI><P STYLE="margin-bottom: 0cm">Development of software for
+				the&nbsp;radiosounding analysis and the computation of
+				instability indices. 
+				</P>
+				<LI><P STYLE="margin-bottom: 0cm">Development of ensemble neural
+				network tools for short-time thunderstorm and rain forecast,
+				using instability indices derived by radiosoundings or GCM. 
+				</P>
+				<LI><P STYLE="margin-bottom: 0cm">Conversion in NetCDF and GRIB
+				formats of meteo data (stations, soundings, satellite,
+				models,...) 
+				</P>
+				<LI><P STYLE="margin-bottom: 0cm">Visualization of real time meto
+				data using the NCAR &quot;ZEBRA&quot; software. 
+				</P>
+				<LI><P>Case studies and research on convection, rainfall and
+				hail. 
+				</P>
+			</UL>
+		</TD>
+	</TR>
+</TABLE>
+<P ALIGN=CENTER><BR><BR>
+</P>
+<TABLE WIDTH=743 BORDER=1 CELLPADDING=2 CELLSPACING=3 BGCOLOR="#cccc99">
+	<COL WIDTH=731>
+	<TR>
+		<TD WIDTH=731 BGCOLOR="#cccc99">
+			<P ALIGN=CENTER><A HREF="education.html"><B>Education and courses</B>
+			</A>
+			</P>
+			<P ALIGN=CENTER><A HREF="CV.pdf"><B>Curriculum Vitae (100kB PDF)</B>
+			</A>
+			</P>
+			<P ALIGN=CENTER><A HREF="publications.html"><B>Publications</B></A>
+						</P>
+			<P ALIGN=CENTER><A HREF="references.html"><B>Selected references</B>
+			</A>
+			</P>
+			<P ALIGN=CENTER><A HREF="http://www.osmer.fvg.it/"><B>OSMER
+			Homepage</B></A> 
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+<P ALIGN=CENTER><BR><BR>
+</P>
+<P ALIGN=CENTER><BR><BR>
+</P>
+<P ALIGN=CENTER STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P ALIGN=CENTER STYLE="margin-bottom: 0cm"><I><A HREF="http://digilander.libero.it/agostino.manzato">Tino</A>
+<FONT FACE="Times New Roman, serif">&copy;</FONT> August 2007</I></P>
+<P ALIGN=CENTER STYLE="margin-bottom: 0cm"><BR>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,1630 @@
+WARNING: vsize ridiculously low, Megabytes assumed
+
+R : Copyright 2003, The R Development Core Team
+Version 1.7.1  (2003-06-16)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> # nice nohup R --no-save --vsize 160 < database_NN_clas_hail2_p_noA.R > database_NN_clas_hail2_p_Txx_noA.out &
+> # source("database_NN_clas_hail2_p_noA.R") 
+> # Script di R che legge le variabili di attivita' e gli indici di Suond_analys.py 
+> # e costruisce una Rete Neurale di T. Petzoldt per la classificazione dei
+> # casi attivi da quelli non attivi.
+> # Definisce il caso come attivo se c'e' almeno 1 pannello colpito.
+> # Trasforma le variabili nelle loro probabilita' a posteriori, sviluppate
+> # apposta per la grandine e costruite usando con atang, exp, x^2...
+> # Il database 1995-2004 viene diviso in Training (3/4) e Validation (1/4).
+> # Questo viene fatto in 12 modi (Bootstrap) diversi, ottenendo 12 coppie T-V.
+> # 0) per ogni Bootstrap viene iterato questo processo:
+> # 1) scelta degli input: si parte da una var e si aggiunge una alla volta
+> # tutte le altre.
+> # 2) per ogni Training vengono provate 30-120 reti neurali con pesi iniziali casuali
+> # trovando quella che da' l'errore TE minimo, solo se non fallisce per meno di 10 casi,
+> # poi vengono provate altre 30 reti partendo dai pesi di quella con TE minimo,
+> # trovando una nuova rete con TE minimo (minimo globale?).
+> # 3) i pesi che definiscono questa rete neurale vengono usati per calcolare
+> # le previsioni sul Validation sample e l'Errore di Cross Entropy VE per 
+> # questo campione viene calcolato come:
+> # 	Ec-e = 1/N * SUMi[ti * ln(yi) + (1-ti) * ln(1-yi)]
+> # dove ti e' l'iesimo valore vero e yi l'output della rete neurale.
+> # L'usare l'errore di cross entropy assieme ad un sigmoide "logistic" 1/[1+e^(-x)]
+> # per l'output (classificato come 1 o 0) porta la rete a dare come output la
+> # posterior probability (o dovrei avere 2 output?).
+> # Quindi per ogni var ottengo una coppia TE-VE.
+> # 4) si sceglie la variabile che ha ottenuto il minimo VE. 
+> # 5) iterando sui 12 bootstrap ottengo 12 variabili e prendo la piu' frequente
+> # salvando le sue coppie TE-VE.
+> # 6) Procedo aggiungendo variabili finche' VE non smette di calare ad ogni passo.
+> # 7) In tutto questo si tiene il numero di Hidden Neurons uguale al numero di variabili 
+> # di input e quando queste sono state tutte scelte si rifa' un ciclo simile in cui,
+> # invece di cambiare le var di input, cambia H, trovando il miliore (finche' VE cala).
+> # Dal 30/03/2004 non uso piu' H = I, ma uso H = I/2 + 1.
+> # Usa anche il modulo dei venti LLW, MLW, la Maximum Buoyancy, VFlux... b_PBL e h_MUP,
+> # BOY, LRH e MRH.
+> # Usa anche l'attivita' delle 6 ore prima ma NON la diff. in 6 ore di altri indici.
+> # Usa anche SST.
+> # 16/04/2007: a differenza di database_NN_clas_hail2_p.R esclude tutti i casi con
+> # 1 solo hailpads! Devono essercene almeno due colpiti nelle stesse 6h.
+> # 
+> # By Tino Version: (germe 27/5/2001) ... 05/04/2007
+> # 20070831: tolgo dal training in 2004 per spostarlo nel test (solo Tvc)!
+> # 20080226: tolgo ACTP perche' operativamente non ce l'ho! (MONA!!!)
+> # abbasso 90+10 a 40+10nn e aggiungo l'errore totale stimato TotE=3/4TE+1/4VE
+> # 
+> 
+> #******************************************************************************************
+> 
+> library(mva)	# include the MultiVariateAnalysis library
+> library(eda)	# to smooth
+> library(nnet)	# nnet-Library from MASS (Venables and Ripley)
+> 
+> #******************************************************************************************
+> 
+> way <- "Tv" # Choose the method of computing adiabat lifting
+> 
+> if(way == "T") 
++ 	{
++ 	 filein  <- "database_rain9203_SST_T.dat" 	# nota che le var di attivita' sono i
++ 	 fileout <- "tutto_T.ps"			# valori massimi e medi (/4) nelle 4 aree
++ 	}
+> if(way == "Tv") 
++ 	{
++ 	 filein  <- "database_rain9203_SST_Tv.dat"	#database_Tr_Tv.dat"
++ 	 fileout <- "tutto_Tv.ps"
++ 	}
+> if(way == "Tvc") 
++ 	{
++ 	 filein  <- "database_rain9203_SST_Tvc.dat"
++ 	 fileout <- "tutto_Tvc.ps"
++ 	}
+> 
+> #******************************************************************************************
+> 
+> # Definitions of fields:
+> 
+> otto <- 12	# number of different bootstraps 2-8
+> 
+> # VARIABILI:
+> #nvar <- 41	# tot number of variables in the files (columns)
+> #nvar <- 91	# 67+4 tot number of variables in the files (columns)
+> nvar <- 109	# 97
+> 
+> campo <- vector(mode = "character", length = nvar)	# nomi dei campi
+> 
+> campo <- c("YYYY", "MM", "DD", "HH", "JJJ", "NegLightInt", "NegLightIntMax", "NumLight", "NumLightMax", "PosLightInt", "PosLightIntMax", "HailPads", "HailPadsMax", "Rain6Hour", "Rain6HourMax", "WindGust", "WindGustMax", "BOY", "BRI", "CAP", "CAPE", "CIN", "DT500", "DTC", "EHI", "EL", "HD", "Hel", "KI", "LCL", "LFC", "LI", "LLWu", "LLWv", "LRH", "MEL", "MLWu", "MLWv", "MRH", "MaxBuo", "Mix", "PBL", "PWC", "PWE", "Rel_Hel", "SWEAT", "SWISS", "Shear", "Shear3", "ShowI", "Tbase", "Thetae", "Trop", "UpDr", "VFlux", "VV", "VVstd", "WBZ", "b_PBL", "h_MUP", "SST", "D_BOY", "D_BRI", "D_CAP", "D_CAPE", "D_CIN", "D_DT500", "D_DTC", "D_EHI", "D_EL", "D_HD", "D_Hel", "D_KI", "D_LCL", "D_LFC", "D_LI", "D_LLWu", "D_LLWv", "D_LRH", "D_MEL", "D_MLWu", "D_MLWv", "D_MRH", "D_MaxBuo", "D_Mix", "D_PBL", "D_PWC", "D_PWE", "D_Rel_Hel", "D_SWEAT", "D_SWISS", "D_Shear", "D_Shear3", "D_ShowI", "D_Tbase", "D_Thetae", "D_Trop", "D_UpDr", "D_VFlux", "D_VV", "D_VVstd", "D_WBZ", "D_b_PBL", "D_h_MUP", "D_SST", "IVFluxI", "LLWspd", "MLWspd"+ , "ACTP")
+> 
+> # Unita' di misura:
+> 
+> #for (i in 1:nvar)
+> #	cat(i, campo[i], uni[i])
+> uni  <- c("[year]","[month]","[day]","[hour]","[julian]","[kA]","[kA]","[number/6h]","[number/6h]","[kA]","[kA]","[numbers/6h]","[numbers/6h]","[mm/6h]","[mm/6h]","[m/s]","[m/s]","[]","[]","[C]","[J/kg]","[J/kg]","[C]","[C]","[]","[m]","[cm]","[J/kg]","[C]","[m]","[m]","[C]","[m/s]","[m/s]","[%]","[m]","[m/s]","[m/s]","[%]","[K]","[g/kg]","[m]","[mm]","[mm]","[m2/s2]","[]","[]","[1/s]","[1/s]","[C]","[C]","[K]","[m]","[m/s]","[kg/(sm2)]","[m/s]","[m/s]","[m]","[cm/s2]","[m]","[C]","[]","[]","[C]","[J/kg]","[J/kg]","[C]","[C]","[]","[m]","[cm]","[J/kg]","[C]","[m]","[m]","[C]","[m/s]","[m/s]","[%]","[m]","[m/s]","[m/s]","[%]","[K]","[g/kg]","[m]","[mm]","[mm]","[m2/s2]","[]","[]","[1/s]","[1/s]","[C]","[C]","[K]","[m]","[m/s]","[kg/(sm2)]","[m/s]","[m/s]","[m]","[cm/s2]","[m]","[C]","[kg/(sm2)]","[m/s]","[m/s]","[]")
+> 
+> 
+> # RANGE:
+> mi  <- c( 1992, 4,  1,  0,  90,-45000,    0,    0,  0,   0,  0,   50,    0,  0,    0, -2500, -10, -15, -0.5,   500,  0, -400, -40,  100,  100, -10, -15, -15,  600, -25, -25, -20,  0,   0,   0,   0,-200,   0, 0.0005,  -5, -40, 260,  6000,  0, 0.0001, 2.5, 0,    0, -50, 90, -1000, -40, -2000, -2000, -10, -20, -2, -10000, -10, -800, -50, -5000, -5000, -15, -20, -25, -2000, -25, -25, -10, -700, -300, -0.01, -20, -35, -30,    0, -40, -3, -12, -100, -3000, -0.2, -30, -40, -1)	# min x le variabili
+> mx  <- c( 1999, 9, 31, 24, 275,     0, 2100, 2700, 50, 400, 30,  150, 1000, 40, 2750,   100,  17,  20, 2.5, 13000, 20,  770,  45, 8000, 8000,  17,  21,  21, 5200,  20,  20,  20, 20, 3000, 100, 100, 780, 400,  0.0200,  20,  30, 370, 15000, 55, 1.0000, 7.5, 5, 5000,  50, 3000, 1000,  40,  2000,  2000,  15,  20,  2,  10000,  10,  800,  40,  5000,  5000,  15,  25,  35,  2000,  25,  30,  10,  700,  300,  0.01,  20,  35,  30, 8000,  40,  3,  12,  100,  3000, 0.2,  30,  40,  2) 	# max x le variabili
+> 
+> miln <- vector(length = nvar)
+> mxln <- vector(length = nvar)
+> for (var in 1:nvar)
++ {
++ 	miln[var] <- mi[var]
++ 	mxln[var] <- mx[var]
++ }
+> 
+> #******************************************************************************************
+> 
+> # Read all the data:
+> 
+> datitmp  <- matrix(scan(file=filein,na.strings=c("-99999.00000","-99999.0"),skip=1),ncol=nvar-4,byrow=T)
+> # N.B. ho aggiunto "-99999.0" in na.strings solo il 30/03/07. 
+> # Prima prendeva come valore -99999 i dati mancanti dei fulmini prima del 1995
+> 
+> # Numero di casi letti:
+> totcasi <- nrow(datitmp)
+> cat("Ho letto", totcasi, "casi distinti\n")
+Ho letto 15995 casi distinti
+> 
+> cat("Filtro tutti i casi che non sono tra il primo aprile e il 31 settembre!\n")
+Filtro tutti i casi che non sono tra il primo aprile e il 31 settembre!
+> #2005 04 01 =  91 Julian
+> #2005 09 30 = 273 Julian
+> datitmp  <- datitmp[datitmp[, which(campo=="JJJ")]>=91, ]
+> datitmp  <- datitmp[datitmp[, which(campo=="JJJ")]<=274, ]
+> 
+> totcasi <- nrow(datitmp)
+> cat("Ho tenuto solo", totcasi, "casi distinti\n")
+Ho tenuto solo 8100 casi distinti
+> 
+> dati  <- matrix(nrow=totcasi,ncol=nvar,byrow=T)
+> 
+> # Data of probability transformation:
+> prodati  <- matrix(ncol=nvar, nrow=totcasi)
+> 
+> 
+> #******************************************************************************************
+> #
+> 
+> mis <- vector(mode = "numeric", length = nvar)		# num di miss values dei campi
+> std  <- vector(mode = "numeric", length = nvar)		# deviazione standard dei campi
+> media <- vector(mode = "numeric", length = nvar)	# media dei campi
+> medana <- vector(mode = "numeric", length = nvar)	# mediana dei campi
+> mxv <- vector(mode = "numeric", length = nvar)		# max value dei campi
+> miv <- vector(mode = "numeric", length = nvar)		# min value dei campi
+> 
+> badmis <- 10	# numero di casi su cui una rete puo' fallire senza essere scartata
+> steps <- 40
+> oldstep <- steps
+> clas  <- vector(l=steps)
+> cases <- vector(l=steps)
+> yescas <- vector(l=steps)
+> nocas <- vector(l=steps)
+> pro   <- vector()
+> bx <- vector()
+> 
+> # compute linear distribution of activity data and probability of Wind Gust:
+> # ...
+> 
+> #******************************************************************************************
+> 
+> 
+> # computing ln(1+Activity_vars) :
+> cat("Computing ln of activity variables...\n")
+Computing ln of activity variables...
+> 
+> intensity <- vector(l=totcasi)
+> intensityo <- vector()
+> 
+> for(i in 1:totcasi)
++ {
++ 	dati[i,1:(nvar-4)] <- datitmp[i,]
++ 
++ 	# Wind speed of LowLevelWind:
++ 	if(!is.na(dati[i,which(campo=="LLWu")]) && !is.na(dati[i,which(campo=="LLWv")]))
++ 		dati[i,nvar-2] <- sqrt((dati[i,which(campo=="LLWu")])^2 + (dati[i,which(campo=="LLWv")])^2)
++ 	else
++ 		dati[i,nvar-2] <- NaN
++ 
++ 	# Wind speed of MiddleLevelWind:
++ 	if(!is.na(dati[i,which(campo=="MLWu")]) && !is.na(dati[i,which(campo=="MLWv")]))
++ 		dati[i,nvar-1] <- sqrt((dati[i,which(campo=="MLWu")])^2 + (dati[i,which(campo=="MLWv")])^2)
++ 	else
++ 		dati[i,nvar-1] <- NaN
++ 	
++ 	# |VFlux| :
++ 	# Aggiungo il modulo del flusso lungo la componente V
++ 	if(!is.na(dati[i,which(campo=="VFlux")]))
++ 		dati[i,nvar-3] <- abs(dati[i,which(campo=="VFlux")])
++ 	else
++ 		dati[i,nvar-3] <- NaN
++ 
++ 
++ 
++ 	# Change the activity variables (mean and maximum) into ln(1+X):
++ 	# activity :
++ 	for(var in 6:17)
++ 	{
++ 		if(campo[var] == "NegLightInt" || campo[var] == "NegLightIntMax")
++ 			dati[i,var] <- ifelse(is.na(dati[i,var]), NaN, -log(1-dati[i,var]))
++ 		else
++ 			dati[i,var] <- ifelse(is.na(dati[i,var]), NaN, log(1+dati[i,var]))
++ 	}
++ 
++ 	# filter out some errors in VVstd:
++ 	if (!is.na(dati[i,which(campo=="VVstd")]) && abs(dati[i,which(campo=="VVstd")]) > 7)
++ 	{
++ 		cat("Out of range in VVstd")
++ 		cat(dati[i,which(campo=="VVstd")],"\n")
++ 		dati[i,which(campo=="VVstd")] <- NaN
++ 	}
++ 	# filter out some errors in BRI:
++ 	if (!is.na(dati[i,which(campo=="BRI")]) && abs(dati[i,which(campo=="BRI")]) > 1500)
++ 	{
++ 		cat("Out of range in BRI")
++ 		cat(dati[i,which(campo=="BRI")],"\n")
++ 		dati[i,which(campo=="BRI")] <- NaN
++ 	}
++ 	# filter out some errors in EHI:
++ 	if (!is.na(dati[i,which(campo=="EHI")]) && abs(dati[i,which(campo=="EHI")]) > 4)
++ 	{
++ 		cat("Out of range in EHI")
++ 		cat(dati[i,which(campo=="EHI")],"\n")
++ 		dati[i,which(campo=="EHI")] <- NaN
++ 	}
++ 	# filter out some errors in Hel:
++ 	if (!is.na(dati[i,which(campo=="Hel")]) && abs(dati[i,which(campo=="Hel")]) > 500)
++ 	{
++ 		cat("Out of range in Hel")
++ 		cat(dati[i,which(campo=="Hel")],dati[i,],"\n")
++ 		dati[i,which(campo=="Hel")] <- NaN
++ 	}
++ 	# filter out some errors in Rel_Hel:
++ 	if (!is.na(dati[i,which(campo=="Rel_Hel")]) && abs(dati[i,which(campo=="Rel_Hel")]) > 1500)
++ 	{
++ 		cat("Out of range in Rel_Hel")
++ 		cat(dati[i,which(campo=="Rel_Hel")],dati[i,],"\n")
++ 		dati[i,which(campo=="Rel_Hel")] <- NaN
++ 	}
++ }
+Out of range in BRI2942.148 
+Out of range in BRI2345.312 
+Out of range in BRI1839.579 
+Out of range in BRI2417.878 
+Out of range in BRI1847.395 
+Out of range in Hel518.0014 1992 9 15 6 259.25 NaN 0 NaN 0 NaN 0 0 0 0 0 1.740466 1.931521 97.40126 1.06867 13.02813 24.93742 -36.67361 4.47632 4.56522 0.08487 3766 0 518.0014 21.97897 2100.808 2817 2.27909 6.5565 -0.62821 66.64442 3316 11.31172 4.2767 55.98424 1.20025 7.43006 1038 2.10329 25.85141 544.5574 97.43788 -0.62347 0.01661 0.02009 4.46469 5.89729 320.0128 10690 0 0.00908 4.63515 0.26283 2680 -0.10458 1539 23 0.30012 -0.64561 4.75637 -76.21838 -10.81346 2.41103 2.01793 0.08209 -1203 -0.75228 526.9001 -6.64382 411.2143 361 2.3312 2.18456 -0.71948 -13.84298 -296 17.09868 0.33675 -11.29983 -2.91223 -1.57218 -2492 -5.73602 -4.57745 540.1647 -22.99807 0.38109 0.00834 0.01321 1.76138 -3.45063 -4.03049 -2171 -11.52522 -0.00553 0.38938 -0.10723 -288 0.11218 236 0 0.00908 6.586527 12.09319 NA 
+Out of range in Hel-681.5231 1992 9 15 24 260 NaN 0 NaN 0 NaN 0 0 0 0 0 1.386294 1.629241 94.95187 0 5.96364 0 -1114.938 4.89157 4.92738 0 NA 0 -681.5231 14.81161 2099.238 NA 4.94963 21.76496 -15.50392 67.59096 3374 31.51113 -6.85931 48.3972 -3.56024 7.5534 1874 0 23.97975 -136.2055 135.3975 4.89736 0.01531 0.02384 5.00838 6.18955 320.3261 7673 0 -0.07019 4.53473 0.30353 2879 0.14273 1916 23.2 -3.07612 -0.05586 -1.18725 -6.38049 -1064.995 0.78979 1.16632 0.00138 NA 0 -389.1975 -10.56624 452.2866 NA 0.4918 17.02729 -8.61414 1.60737 -80 12.0743 -3.49041 -8.86811 -4.41469 -1.0992 -311 -2.04044 -3.82529 -101.5464 23.01076 1.90513 0.00489 0.00727 -1.82774 -2.7271 -1.29295 -5126 0 -0.02985 0.20126 0.03811 -271 0.20738 1652 0.2 0.07019 26.72237 32.24905 NA 
+Out of range in Hel-538.5043 1992 9 16 12 260.5 NaN 0 NaN 0 NaN 0 0 0 0 0 1.386294 1.458615 95.86558 0 7.49453 0 -1306.565 5.75607 6.00512 0 NA 0 -538.5043 12.60657 1817.16 NA 5.75607 15.76815 -13.95121 56.4161 3444 30.28524 -10.6651 38.19805 -5.6162 8.24695 1342 0 22.21578 34.93292 126.6178 6.12009 0.0116 0.02196 7.90879 7.94708 321.1060 13969 0 -0.08333 4.39421 0.36369 2755 -0.22339 248 23.2 1.78939 0 -6.74472 0 41.86229 1.0547 1.7694 0 NA 0 -556.4048 0.59878 -177.5355 NA 0.2954 -15.71848 -4.54632 -6.09465 4 16.77459 -10.56975 -5.20781 0.55123 0.35359 -109 0 -0.66939 -57.70598 16.96203 3.79413 -0.0058 -0.00804 2.99686 0.94817 0.04693 244 0 -0.05415 -0.22321 0.09723 -203 -0.34665 -1323 0 0.08333 21.05400 32.10826 NA 
+Out of range in Hel-742.8223 1992 9 16 18 260.75 NaN 0 NaN 0 NaN 0 0 0 0 0 1.335001 1.526056 96.30743 0 7.70785 0 -1441.689 4.09382 4.15367 0 NA 0 -742.8223 18.48102 1824.631 NA 3.86576 9.41104 -13.86625 54.52102 3655 33.31067 -12.70424 42.91729 -3.74073 8.80896 1371 0 24.52266 -21.17886 109.1717 3.06106 0.01194 0.02327 8.48579 8.86399 323.9775 9672 0 -0.09811 4.51603 0.25159 3175 -0.25465 1287 23.2 0.44185 0 0.21332 0 -135.1236 -1.66225 -1.85145 0 NA 0 -204.3180 5.87445 7.47088 NA -1.89031 -6.35711 0.08496 -1.89508 211 3.02543 -2.03914 4.71924 1.87547 0.56201 29 0 2.30688 -56.11178 -17.44606 -3.05903 0.00034 0.00131 0.577 0.91691 2.87155 -4297 0 -0.01478 0.12182 -0.1121 420 -0.03126 1039 0 0.09811 16.7583 35.65107 NA 
+Out of range in Hel584.1267 1992 9 16 24 261 NaN 0 NaN 0 NaN 0 0 0 0 0 1.458615 1.887070 94.92385 0 16.36735 0 -1366.656 3.63907 3.74264 0 NA 0 584.1267 16.59097 1724.181 NA 2.96885 46.01636 -4.81225 57.1443 3668 35.92936 -10.01194 44.73502 -3.13252 9.00145 1281 0 24.53677 1323.816 94.02914 -4.6144 0.01567 0.0364 8.86199 9.35883 323.9535 13408 0 -0.07575 4.45177 0.21146 3144 -0.21745 1281 23.2 -1.38358 0 8.6595 0 75.03229 -0.45475 -0.41103 0 NA 0 1326.949 -1.89005 -100.4495 NA -0.89691 36.60532 9.054 2.62328 13 2.61869 2.6923 1.81773 0.60821 0.19249 -90 0 0.01411 1344.995 -15.14256 -7.67546 0.00373 0.01313 0.3762 0.49484 -0.02402 3736 0 0.02236 -0.06426 -0.04013 -31 0.0372 -6 0 0.07575 46.2673 37.29823 NA 
+Out of range in Hel-719.9492 1992 9 17 18 261.75 NaN 0 NaN 0 NaN 0 0 0 0 0 1.360977 1.757858 96.50451 7.07415 2.18803 377.0984 -75.4136 -1.71416 -1.80557 -0.09122 10053 1.97714 -719.9492 13.30134 1183.560 2580 -1.10073 23.26565 -15.96954 49.70121 4117 32.94335 -12.37019 39.1384 2.62072 11.43823 2533 38.45993 22.90851 -38.70578 53.05407 -3.04121 0.01208 0.02566 9.4998 13.81577 330.2483 13174 18.68435 -0.08849 4.64269 0.21005 2998 -0.43934 241 23.2 2.35186 7.07415 -0.37652 377.0984 831.943 -3.02488 -2.85249 -0.09122 NA 1.97714 -397.0223 10.49674 -386.1577 NA -2.48236 -9.22249 -0.55286 -0.69185 401 -1.87332 -1.61766 0.39211 6.06049 1.88312 1596 38.45993 0.47753 -353.0874 -9.75577 -4.5079 -0.00055 0.00479 -0.00874 3.33017 5.03839 533 18.68435 -0.00146 -0.006 -0.04176 92 -0.019 -650 0 0.08849 28.21908 35.18929 NA 
+Out of range in Hel-510.533 1992 9 18 6 262.25 NaN 0 NaN 0 NaN 0 0 0 0 0 1.757858 1.94591 97.88075 0 15.0824 0 -896.541 2.10737 2.27729 0 NA 0 -510.533 11.08038 1908.609 NA 1.75414 12.38446 -11.11142 51.82373 3447 32.72253 -10.32337 40.53983 -2.14902 8.07368 2838 0 21.11211 293.2422 67.14143 -0.72409 0.01261 0.02397 8.3174 7.42433 321.4205 12376 0 -0.07128 4.35714 0.27374 2971 -0.08303 974 22.8 -0.36455 -5.98688 -2.06084 -190.6785 -775.6795 3.25229 3.11593 -0.38436 NA -1.26287 -332.8389 -9.40356 679.4426 NA 2.79878 -26.65398 2.44838 -1.89896 -443 -0.82158 -2.55245 -2.17742 -4.03492 -2.66937 -268 -35.43094 -2.48185 -29.27361 20.00036 2.61809 -0.00117 -0.00211 -0.73117 -5.37848 -6.16619 -1232 -14.9327 -0.00404 -0.01558 0.01077 -226 0.17895 485 0 0.07128 16.63846 34.31233 NA 
+Out of range in Hel-805.9076 1992 9 19 18 263.75 NaN 0 NaN 0 NaN 0 0 0 0 0 1.410987 1.629241 96.27537 0 2.79633 0 -1037.921 1.93728 1.42113 0 NA 0 -805.9076 23.95165 2867.800 NA 1.71808 9.76039 -13.92684 43.7432 3110 37.36006 -13.76809 53.90718 -2.61173 5.603 1701 0 21.95631 79.83214 107.4417 -4.58868 0.01249 0.02458 1.70526 0.65836 317.2583 11734 0 -0.07231 4.42939 0.23143 2767 0.02927 1872 21.6 -0.87981 0 -0.45491 0 -221.7556 0.88519 0.858 0 NA 0 -877.4348 2.17033 129.4279 NA 1.36728 -31.5848 -1.9459 -4.2364 -104 -3.10173 -1.83939 13.74942 -1.31278 -0.49379 642 0 2.41588 -621.9032 -12.48278 -5.77776 0.00205 0.00377 1.03579 -1.37348 -1.57776 2410 0 -0.00165 -0.04721 -0.02512 -76 0.02502 -8 0 0.07231 17.00653 39.81626 NA 
+Out of range in Hel1878.575 1992 9 19 24 264 NaN 0 NaN 0 NaN 0 0 0 0 0 1.386294 1.629241 95.30837 0.00645 5.98361 1.05616 -131.1214 1.06087 0.97328 0.01574 4568 0 1878.575 27.74041 2326.812 4017 2.57756 36.60101 10.87216 53.03206 3273 43.19132 -5.97736 59.89568 -0.26882 6.9102 1533 3.38547 24.25985 2384.318 144.5505 -10.66881 0.01908 0.04752 0.75986 4.48246 319.3852 12159 0 0.00187 4.57434 0.24462 2900 0.17363 1678 21.4 -0.967 0.00645 3.18728 1.05616 906.8 -0.87641 -0.44785 0.01574 NA 0 2684.482 3.78876 -540.988 NA 0.85948 26.84062 24.799 9.28886 163 5.83126 7.79073 5.9885 2.34291 1.3072 -168 3.38547 2.30354 2304.486 37.10877 -6.08013 0.00659 0.02294 -0.9454 3.8241 2.12696 425 0 0.07418 0.14495 0.01319 133 0.14436 -194 -0.2 0.00187 38.18164 43.60297 NA 
+Out of range in Rel_Hel2384.318 1992 9 19 24 264 NaN 0 NaN 0 NaN 0 0 0 0 0 1.386294 1.629241 95.30837 0.00645 5.98361 1.05616 -131.1214 1.06087 0.97328 0.01574 4568 0 NaN 27.74041 2326.812 4017 2.57756 36.60101 10.87216 53.03206 3273 43.19132 -5.97736 59.89568 -0.26882 6.9102 1533 3.38547 24.25985 2384.318 144.5505 -10.66881 0.01908 0.04752 0.75986 4.48246 319.3852 12159 0 0.00187 4.57434 0.24462 2900 0.17363 1678 21.4 -0.967 0.00645 3.18728 1.05616 906.8 -0.87641 -0.44785 0.01574 NA 0 2684.482 3.78876 -540.988 NA 0.85948 26.84062 24.799 9.28886 163 5.83126 7.79073 5.9885 2.34291 1.3072 -168 3.38547 2.30354 2304.486 37.10877 -6.08013 0.00659 0.02294 -0.9454 3.8241 2.12696 425 0 0.07418 0.14495 0.01319 133 0.14436 -194 -0.2 0.00187 38.18164 43.60297 NA 
+Out of range in Hel568.1204 1994 4 10 24 101 NaN 0 NaN 0 NaN 0 0 0 2.785011 3.11795 2.208274 2.341806 92.59655 0 1.76263 0 -972.457 3.60864 1.7927 0 NA 0 568.1204 19.15854 2629.052 NA 1.46257 -2.4982 5.24123 76.22135 2403 10.54636 0.43107 79.01543 -1.96158 2.49484 1299 0 12.21481 612.9926 15.73639 -2.83407 0.01027 0.01628 2.09688 -10.05088 296.7407 8799 0 0.02028 4.51547 0.62848 810 0.11824 2403 11.4 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA 0.02028 5.80616 10.55517 NA 
+Out of range in BRI2957.662 
+Out of range in EHI8.40422 
+Out of range in Hel683.2938 1994 9 14 12 257.5 NaN 0 NaN 0 NaN 0 1.568616 2.484907 3.610918 3.83298 2.351375 2.517696 96.07859 8.49596 7.65816 2023.331 -10.60203 -6.04719 -6.6438 NaN 11868 10.87483 683.2938 29.16219 837.1537 1406 -5.64251 9.58531 -2.25074 76.54374 4552 -3.94667 -19.37353 74.4307 17.15113 13.76049 4609 54.555 35.9375 664.5846 236.3447 -8.59649 0.01807 0.01584 -0.67096 17.03045 338.1013 11704 43.81985 -0.12724 5.28877 0.4462 3096 -0.6451 549 23.9 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA 0.12724 9.846014 19.77144 NA 
+Out of range in Hel760.2586 1995 9 19 12 262.5 -7.143776 0 4.135167 4.406719 5.101694 6.121396 0 0 4.290459 4.892602 2.424803 2.587764 94.09833 0.05783 4.44188 8.28188 -55.94267 -0.2494 -0.22258 0.04002 6415 0.07954 760.2586 31.27209 2486.526 5006 -3.01982 8.59494 3.3735 93.36699 3637 -0.50714 -10.89509 92.061 0.99259 7.61076 241 8.85179 35.61109 773.2432 133.3395 -9.08442 0.01569 0.02097 -1.25029 5.44045 325.2043 12544 3.7477 -0.06531 4.67368 0.71201 3504 0.27878 2467 20.9 -2.30939 0.05783 -6.66625 8.28188 511.2593 -6.29436 -5.71045 0.04002 NA 0.07954 679.5805 6.82271 -9.37966 NA -6.54125 3.12471 0.96248 27.72937 627 -0.74532 -4.20977 14.03077 2.81057 1.61723 -2322 8.85179 6.04604 660.3067 83.25429 -10.61281 0.00715 0.01363 -7.73081 3.31482 8.72843 -1104 3.7477 -0.04843 0.6953 0.46102 531 0.19794 271 -0.2 0.06531 9.233282 10.90689 NA 
+Out of range in BRI1758.479 
+Out of range in BRI3923.435 
+Out of range in EHI5.31041 
+Out of range in BRI2147.826 
+Out of range in BRI2091.358 
+Out of range in BRI3447.921 
+Out of range in BRI2057.370 
+Out of range in BRI1544.772 
+Out of range in BRI1740.414 
+Out of range in Hel514.317 2003 4 2 18 92.75 -3.864931 0 1.163151 2.079442 1.856298 3.122365 0 0 3.608212 3.985273 2.694627 2.85647 92.58571 0 4.70075 0 -747.6924 1.58088 1.06435 0 NA 0 514.317 23.85685 2437 NA -1.8156 9.36587 6.96842 95.65166 2437 1.1906 -11.24417 93.34344 -0.68426 3.77561 357 0 17.9756 562.4143 31.16433 -6.67863 0.01303 0.01688 0.09642 -4.61113 304.0195 9750 0 -0.01521 NA NA 1280 0.22628 2437 10.1 0.43587 0 3.03402 0 -156.9980 -1.07283 -0.29747 0 NA 0 137.7791 0.29232 -43.79455 NA -4.81203 6.59364 2.50181 16.07894 8 8.51285 -1.29894 11.67131 0.37284 0.0279 -897 0 1.90104 128.0549 -141.0808 -4.86026 0.00243 -0.00027 -0.86591 -0.14186 -0.26092 -1026 0 0.0195 NA NA 496 -0.24633 8 -0.2 0.01521 11.67383 11.30703 NA 
+Out of range in Hel552.6762 2003 5 14 12 134.5 -3.701302 0 1.163151 1.94591 3.848018 5.217107 0.1823216 0.6931472 1.791759 2.639057 2.639057 3.00072 NA 0 5.19448 -99 99 NA NA -0.30449 NA NA 552.6762 NA NA NA NA 6.93106 8.58653 NA NA 4.87991 -1.62577 NA NA NA 1644 NA 15.32205 492.0983 39.04799 NA NA 0.02395 NA NA NA NA NA -0.01143 4.56907 0.81114 2568 NA NA 14.4 NA -1.80055 0.66277 -294.7054 99.34493 NA NA -0.68015 NA NA 271.8343 NA NA NA NA -0.50643 4.89962 NA NA 7.97761 5.00206 NA NA NA 121 NA -8.04745 184.9794 -148.7612 NA NA 0.00856 NA NA NA NA NA 0.01017 0.20735 -0.0668 262 NA NA -4.1 0.01143 11.03486 5.143603 NA 
+Out of range in BRI2331.938 
+Out of range in BRI1591.289 
+Out of range in EHI6.18457 
+Out of range in EHI9.68513 
+> 
+> 
+> # try to get free memory!
+> datitmp <- matrix(nrow=2,ncol=2)
+> 
+> #******************************************************************************************
+> 
+> # stampa di prova del caso 140:
+> for (i in 1:nvar)
++ {
++ 	cat(i, campo[i], dati[200, i], uni[i], "\n")
++ }
+1 YYYY 1992 [year] 
+2 MM 6 [month] 
+3 DD 4 [day] 
+4 HH 12 [hour] 
+5 JJJ 156.5 [julian] 
+6 NegLightInt NaN [kA] 
+7 NegLightIntMax 0 [kA] 
+8 NumLight NaN [number/6h] 
+9 NumLightMax 0 [number/6h] 
+10 PosLightInt NaN [kA] 
+11 PosLightIntMax 0 [kA] 
+12 HailPads 0 [numbers/6h] 
+13 HailPadsMax 0 [numbers/6h] 
+14 Rain6Hour 0 [mm/6h] 
+15 Rain6HourMax 0 [mm/6h] 
+16 WindGust 1.722767 [m/s] 
+17 WindGustMax 1.808289 [m/s] 
+18 BOY 95.87271 [] 
+19 BRI 26.55395 [] 
+20 CAP 5.40636 [C] 
+21 CAPE 140.5132 [J/kg] 
+22 CIN -8.92319 [J/kg] 
+23 DT500 0.14057 [C] 
+24 DTC 0.32256 [C] 
+25 EHI 0.0047 [] 
+26 EL 5509 [m] 
+27 HD 1.5789 [cm] 
+28 Hel 12.53592 [J/kg] 
+29 KI 20.92808 [C] 
+30 LCL 1072.233 [m] 
+31 LFC 1565 [m] 
+32 LI 0.24136 [C] 
+33 LLWu 3.59711 [m/s] 
+34 LLWv -3.75211 [m/s] 
+35 LRH 70.79316 [%] 
+36 MEL 3380 [m] 
+37 MLWu 0.74746 [m/s] 
+38 MLWv -5.32142 [m/s] 
+39 MRH 53.37044 [%] 
+40 MaxBuo 3.61783 [K] 
+41 Mix 9.70995 [g/kg] 
+42 PBL 829 [m] 
+43 PWC 14.03883 [mm] 
+44 PWE 23.27836 [mm] 
+45 Rel_Hel 5.35735 [m2/s2] 
+46 SWEAT 60.67464 [] 
+47 SWISS 8.47974 [] 
+48 Shear 0.00614 [1/s] 
+49 Shear3 0.00319 [1/s] 
+50 ShowI 6.02851 [C] 
+51 Tbase 11.47382 [C] 
+52 Thetae 322.0253 [K] 
+53 Trop 11317 [m] 
+54 UpDr 16.69697 [m/s] 
+55 VFlux -0.02536 [kg/(sm2)] 
+56 VV 4.73229 [m/s] 
+57 VVstd 0.38798 [m/s] 
+58 WBZ 2676 [m] 
+59 b_PBL -0.35659 [cm/s2] 
+60 h_MUP 688 [m] 
+61 SST 21.6 [C] 
+62 D_BOY 1.95552 [] 
+63 D_BRI 24.43169 [] 
+64 D_CAP 2.10128 [C] 
+65 D_CAPE 120.1971 [J/kg] 
+66 D_CIN 14.36195 [J/kg] 
+67 D_DT500 -0.91813 [C] 
+68 D_DTC -0.14671 [C] 
+69 D_EHI 0.00185 [] 
+70 D_EL 2368 [m] 
+71 D_HD 1.5789 [cm] 
+72 D_Hel 0.18086 [J/kg] 
+73 D_KI -3.97373 [C] 
+74 D_LCL -34.02774 [m] 
+75 D_LFC -515 [m] 
+76 D_LI 0.19426 [C] 
+77 D_LLWu 1.93062 [m/s] 
+78 D_LLWv 0.16115 [m/s] 
+79 D_LRH -8.4901 [%] 
+80 D_MEL 100 [m] 
+81 D_MLWu 3.43446 [m/s] 
+82 D_MLWv -1.84736 [m/s] 
+83 D_MRH -4.16798 [%] 
+84 D_MaxBuo 2.44276 [K] 
+85 D_Mix 0.4189 [g/kg] 
+86 D_PBL 59 [m] 
+87 D_PWC 10.40126 [mm] 
+88 D_PWE -1.48447 [mm] 
+89 D_Rel_Hel -17.11363 [m2/s2] 
+90 D_SWEAT -23.79412 [] 
+91 D_SWISS 6.06743 [] 
+92 D_Shear -0.00245 [1/s] 
+93 D_Shear3 -0.00044 [1/s] 
+94 D_ShowI 1.30444 [C] 
+95 D_Tbase 0.73495 [C] 
+96 D_Thetae 1.48951 [K] 
+97 D_Trop 477 [m] 
+98 D_UpDr 16.69697 [m/s] 
+99 D_VFlux 0.0042 [kg/(sm2)] 
+100 D_VV -0.02598 [m/s] 
+101 D_VVstd 0.05671 [m/s] 
+102 D_WBZ 16 [m] 
+103 D_b_PBL -0.142 [cm/s2] 
+104 D_h_MUP -210 [m] 
+105 D_SST 0 [C] 
+106 IVFluxI 0.02536 [kg/(sm2)] 
+107 LLWspd 5.197839 [m/s] 
+108 MLWspd 5.373659 [m/s] 
+109 ACTP NA [] 
+> #******************************************************************************************
+> 
+> #hail <- 1   # minimum number of hailpads to have an "active hail" 6h case 
+> # dal 16/04/07 ne tengo almeno due!
+> hail <- 2   # minimum number of hailpads to have an "active hail" 6h case 
+> 
+> cat("Computing activity variable (at least 2 hailpad/6h)...\n")
+Computing activity variable (at least 2 hailpad/6h)...
+> activity <- vector(length = totcasi)
+> activitypro <- vector(length = totcasi)
+> activitypro2 <- vector(length = totcasi)
+> onlyact1 <- vector()
+> onlyact2 <- vector()
+> onlyact3 <- vector()
+> 
+> #acttr <- 0.5
+> acttr <- 0.1	# se uso activity
+> 
+> s <- 0
+> j <- 1
+> for(i in 1:totcasi)
++ {	
++ 	# Forse sarebbe meglio dividere per 3 per essere sempre < 1!
++ 	#if (dati[i,7] > 0.6)	# almost 1 lightning
++ 	#if (dati[i,7] > 1.3)	# almost 3 lightning
++         #if (dati[i,which(campo=="Rain6HourMax")] >= 1.8)    # almost 5.05 mm/6h
++         if (!is.na(dati[i,which(campo=="HailPads")]) && round(4*dati[i,which(campo=="HailPads")], 0) >= hail)  # almost 2 hailpads in 6h. HailPads NON puo' mai essere missing
++ 	{
++ 		# activity[i] <- (1/8*dati[i,7] + 1/6*dati[i,10] + 1/3*dati[i,11])/2.9
++ 		# Attivita' in 2 classi (0,1) per avere le posterior probability
++ 		activity[i] <- 1
++ 		TotHailPads <- round(4*dati[i,which(campo=="HailPads")], 0)
++ 		onlyact1[j] <- TotHailPads # salvo il num. intero di pannelli totali
++ 		j <- j + 1
++ 	}
++ 	else 
++ 		activity[i] <- 0
++ 
++ 	## Discretizzo l'attivita' per migliorare la presenza:
++ 	#if (activity[i] > acttr)
++ 	#{
++ 	#	if (activity[i] < 0.4)
++ 	#		activity[i] <- 0.4
++ 	#	else
++ 	#		activity[i] <- 1
++ 	#}
++ 	#else 
++ 	#	activity[i] <- 0
++ 
++ 	# ACTP: save the activity of six hour before - ATTivita' Precedente
++ 	# Mi serve JJJ non trasformato!
++ 	# 6h = 0.25 in Julian day
++ 	if (i > 1)
++ 	{
++ 		if ((dati[i,which(campo=="JJJ")] - dati[(i-1),which(campo=="JJJ")]) == 0.25)
++ 			dati[i,nvar] <- activity[i-1]
++ 		else
++ 			# Achtung: 20070816 metto 0 se manca l'attivita' precedente per evitare il 42% di missing nel 2005 e 2006.
++ 			#dati[i,nvar] <- NaN
++ 			dati[i,nvar] <- 0
++ 	}
++ 	else
++ 		dati[i,nvar] <- NaN
++ 	
++ }
+> 
+> cat("Histogram activity\n")
+Histogram activity
+> hisATT <- hist(activity, plot=F)
+> cat("intervalli", hisATT$breaks, "\n")
+intervalli 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 
+> cat("conteggi", hisATT$counts, "\n")
+conteggi 7757 0 0 0 0 0 0 0 0 343 
+> actma <- max(activity)
+> actmi <- min(activity)
+> cat("Massima attivita'=", actma, "\tMinima attivita'=", actmi, "\n")
+Massima attivita'= 1 	Minima attivita'= 0 
+> 
+> cat("Histogram previous activity\n")
+Histogram previous activity
+> hisATTP <- hist(dati[,nvar], plot=F)
+> cat("intervalli", hisATTP$breaks, "\n")
+intervalli 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 
+> cat("conteggi", hisATTP$counts, "\n")
+conteggi 7773 0 0 0 0 0 0 0 0 326 
+> 
+> #cor(activity, prodati[,17], use="complete")^2
+> 
+> #******************************************************************************************
+> 
+> cat("Transforming all the sounding indices into their probability...\n")
+Transforming all the sounding indices into their probability...
+> 
+> LI500y <- vector()
+> LI500n <- vector()
+> LI500yes <- vector()
+> LI500tot <- vector()
+> LI500int <- vector()
+> 
+> proymed <- vector()
+> pronmed <- vector()
+> datymed <- vector()
+> datnmed <- vector()
+> 
+> acttr <- 0.07		# treashold for active days:
+> 
+> for (i in c(4, 5, 18:nvar))
++ #for (i in c(4,  12:nvar))
++ {
++ 	cat(i, campo[i], "\n")
++ 
++ 	if (i == 4)	# HH has only 4 values
++ 	{
++ 		oldstep <- steps
++ 		steps <- 4
++ 	}
++ 	else
++ 		steps <- oldstep
++ 
++ 	pro <- vector()
++ 	proyes <- vector()
++ 	prono <- vector()
++ 	datyes <- vector()
++ 	datno <- vector()
++ 	bx <- vector()
++ 	newcas <- vector()
++ 	err <- vector()
++ 
++ 	std[i] <- sd(dati[,i], na.rm = TRUE)
++ 	media[i] <- mean(dati[,i], na.rm=TRUE)
++ 	medana[i] <- median(dati[,i], na.rm=TRUE)
++ 
++ 	# da qui e' diverso:
++ 	miv[i] <- min(dati[,i], na.rm=TRUE)
++ 	mxv[i] <- max(dati[,i], na.rm=TRUE)
++ 	mxv[i] <- mxv[i]  + (mxv[i]-miv[i]) * 0.01	# a little more to include MAX in the box before
++ 
++ 	# da qui e' di nuovo uguale:
++ 	#cat(i, campo[i])
++ 	#cat(mxv[i], miv[i], steps, "\n")
++ 	lenbox <- (mxv[i] - miv[i])/(steps - 1)
++ 	halfbox <- 1/2*lenbox
++ 
++ 	xlimi <- miv[i] - 10 * halfbox	# 5 box before
++ 	xlimx <- mxv[i] + 10 * halfbox	# 5 box after
++ 	xrang <- seq(xlimi, xlimx, length=steps+10)	# range for the prob
++ 
++ 	for (s in 0:(steps-1))
++ 	{
++ 		#clas[s+1] <- (s*(mxv[i] - miv[i])/steps +  miv[i] + halfbox)
++ 		clas[s+1] <- (s*lenbox +  miv[i])
++ 		# E' diverso da database_1_dens_cor_9502_tex_h.R :
++ 		#clas[s+1] <- (s*lenbox +  miv[i] - halfbox/2.0)
++ 		cases[s+1]  <- 0
++ 		yescas[s+1] <- 0
++ 		nocas[s+1]  <- 0
++ 	}	
++ 
++ 	if (i == 4)
++ 	{
++ 	clas <- c(0, 6, 12, 18)
++ 	#clas <- c(0.15,  0.19,  0.31, 0.35)
++ 	xrang <- c(-6, 0, 6, 12, 18, 24)
++ 	#xrang <- c(0, 0.12, 0.18, 0.24, 0.30, 0.36)
++ 	}
++ 
++ 	#cat(clas,"\n")
++ 	#cat(xrang,"\n")
++ 
++ 	yesva <- vector()
++ 	nova <- vector()
++ 	vy <- 0
++ 	vn <- 0
++ 	vtot <- 0
++ 	mis[i] <- 0
++ 
++ 
++ 	for (j in 1:totcasi)
++ 	{
++ 		#cat(i, j, dati[j,i], activity[j])
++ 		if (is.na(dati[j,i]))
++ 		{
++ 			mis[i] <- mis[i] + 1
++ 			#next
++ 		}
++ 		else
++ 		{
++ 			#if (dati == 42 && dati[j,i] > 2)
++ 			#	cat(dati[j,1], dati[j,2], dati[j,3], dati[j,4], dati[j,i], "\n")
++ 			value <- (as.integer((dati[j,i] + halfbox - miv[i])/lenbox) + 1)
++ 			cases[value] <- cases[value] + 1
++ 			vtot <- vtot + 1
++ 
++ 		 	if (activity[j] > acttr)
++ 			{
++ 				yescas[value] <- yescas[value] + 1
++ 				yesva[vy] <- dati[j,i]
++ 				if (i == 17)
++ 					LI500y[vy] <- dati[j,i]
++ 				vy <- vy + 1
++ 			}
++ 			else
++ 			{
++ 				nocas[value] <- nocas[value] + 1	
++ 				nova[vn] <- dati[j,i]
++ 				if (i == 17)
++ 					LI500n[vn] <- dati[j,i]
++ 				vn <- vn + 1
++ 			}
++ 		}
++ 	}
++ 
++ 	# for HH don't cumulate in couple:
++ 	if (i == 4)
++ 	{
++ 	 	for (s in 1:steps)
++ 	 	{
++ 			if (cases[s] > 0)
++ 			{
++ 				pro[s] <- yescas[s]/cases[s]
++ 				bx[s] <- clas[s]
++ 				newcas[s] <- cases[s]
++ 			}
++ 	 	}
++ 		ix <- 4
++ 	}
++ 	else
++ 	{	# CUMULATE clas by couple:
++ 	 noise <- 0	# filter out classes with only 1 element (noise?)
++ 
++ 	 # Add the first box if greater than "noise"
++ 	 yes <- yescas[1]
++ 	 cas <- cases[1]
++ 	 if (cas > noise)
++ 	 {
++ 		pro[1] <- yes/cas
++ 		bx[1] <- clas[1]
++ 		newcas[1] <- cas
++ 		#err[1] <- 1/steps * sqrt(1 + totcasi/(steps*cas)) 
++ 		ix <- 2
++ 	 }
++ 	 else
++ 		ix <- 1
++ 
++ 	 # Add the intermediate boxes averaged in couple:
++ 	 for (s in seq(2, steps-1, 2))	# each 2 steps
++ 	 #for (s in seq(1, steps, 2))	# each 2 steps
++ 	 #for (s in 0:(steps-1))
++ 	 {
++ 		yes <- yescas[s] + yescas[s+1]
++ 		cas <- cases[s] + cases[s+1]
++ 		xmea <- (clas[s] + clas[s+1])/2.0
++ 
++ 		if (cas > noise)	# filter out classes with only 1 element (rumor?)
++ 		{
++ 			pro[ix] <- yes/cas
++ 			bx[ix] <- xmea
++ 			newcas[ix] <- cas 
++ 			#err[ix] <- 1/steps * sqrt(1 + totcasi/(steps*cas)) 
++ 			ix <- ix + 1
++ 		}
++ 		#else
++ 			#pro[s+1] <- NaN	
++ 	 }
++ 
++ 	 # Add the last box if greater than "noise"
++ 	 yes <- yescas[steps]
++ 	 cas <- cases[steps]
++ 	 if (cas > noise)
++ 	 {
++ 		pro[ix] <- yes/cas
++ 		bx[ix] <- clas[steps]
++ 		newcas[ix] <- cas
++ 		#err[ix] <- 1/steps * sqrt(1 + totcasi/(steps*cas))
++ 		ix <- ix + 1
++ 	 }
++ 
++ 	 ix <- (ix - 1)	# number of new classes
++ 	}
++ 	# end of cumulation
++ 
++ 	# Check one variable:	
++ 	if (i == 99)
++ 	{
++ 		LI500newcas <- vector()
++ 		LI500newcas <- newcas
++ 		cat(cases, "\n")
++ 		cat(clas, "\n")
++ 		LI500yes <- yescas
++ 		LI500tot <- cases
++ 		int <- bx
++ 		LI500pro <- pro
++ 		fp <- function(x) {if (f(x)>0) f(x) else 0}
++ 	}
++ 		
++ 	# Make statistics and compute probability function:
++ 	cat(campo[i], "\tValid cases =", totcasi - mis[i])
++ 	cat("\tMin =", miv[i], "\tMax =", mxv[i], "\n")
++ 	quay5 <- quantile(yesva,probs=0.05,na.rm=TRUE)
++ 	quay50 <- quantile(yesva,probs=0.5,na.rm=TRUE)
++ 	quay95 <- quantile(yesva,probs=0.95,na.rm=TRUE)
++ 	quat5 <- quantile(dati[,i],probs=0.05,na.rm=TRUE)
++ 	quat50 <- quantile(dati[,i],probs=0.5,na.rm=TRUE)
++ 	quat95 <- quantile(dati[,i],probs=0.95,na.rm=TRUE)
++ 
++ 	cat("\tMedian =", medana[i], "\tMean =", media[i], "\tStandard Deviation =", std[i], "\n")
++ 	cat("\t", vtot, "Total cases\t5% = ", 	quat5, "\t50% = ", quat50, "\t95% = ", quat95, "\n")
++ 	cat("\t", vy, "Active cases\t5% = ", quay5, "\t50% = ", quay50, "\t95% = ", quay95, "\n")
++ 
++ 	 #************************************************************
++ 	 # Compute the probability function of each variables:
++ 	 #
++ 	 if (i > 17 && i < 62)
++ 	 {	# metto al quadrato il numero di punti negli errori:
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * atan(p[3] + p[4]*bx))))^2)
++ 	 	#fun <- function(p) sum(newcas*(pro - (p[1] + p[2] * atan(p[3] + p[4]*bx)))^2)
++ 	 	out <- nlm(fun, p=c(1,1,1,1), hessian=T)
++ 	 	fp <-  function(x) out$estimate[1]+out$estimate[2]*atan(out$estimate[3]+out$estimate[4]*x)
++ 		#cat(out$estimate[1],"+",out$estimate[2],"*atan(",out$estimate[3],"+",out$estimate[4],"*x")
++ 	 }
++ 	 else
++ 	 {
++ 	  #if (i > 54 && i!=57  && i!=58 && i!=62 && i!=66 && i!=67 && i!=71)
++ 	  #               D_CAP    D_CAPE   D_EHI    D_KI     D_LCL    D_LLWv
++ 	  # cambio il 14/09/2004:
++ 	  if (i > 61 && i!=63)   # parabola:
++ 	  {
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx + p[3] * bx^2)))^2)
++ 		# cambio il 15/09/2004:
++ 	 	out <- nlm(fun, p=c(0.1,0.01,0.01), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2)
++ 	  }
++ 	  else
++ 	  {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx)))^2)
++ 	 	out <- nlm(fun, p=c(bx[steps/4],0), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 	  }
++ 	 }
++ 
++ 	 if (campo[i] == "BOY")	# BOY
++ 	 {
++ 	 	#fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx+p[3]*bx^2)))^2)
++ 	 	#out <- nlm(fun, p=c(-4, 0.05, -0.001), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2)
++ 	 	#fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx+p[3]*(bx^2-p[4])^2)))^2)
++ 	 	#out <- nlm(fun, p=c(-4.5, 0.05, -0.003, 90), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*(x-out$estimate[4])^2)
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]* exp((p[2]*bx-(bx-95)^2)/p[3]))))^2)
++ 		#out <- nlm(fun, p=c(0.00005, 3, 94, 35), hessian=T)
++ 		#fp <- function(x) (out$estimate[1] * exp((out$estimate[2]*x-(x-95)^2)/out$estimate[3]))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx )))^2)
++ 	 	out <- nlm(fun, p=c(-1.8, 0.02), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 	 }
++ 
++  	 if (campo[i] == "BRI")	# BRI
++ 	 {
++ 	 	#	fp <- function(x) (0.45 - exp(-(x+40)/30))
++ 		# 23/07/03
++ 		fun <- function(p) sum((newcas*(pro - (p[1] - exp(-(p[2]+bx)/p[3]))))^2)
++ 		out <- nlm(fun, p=c(0.2, 50, 20), hessian=T)
++ 		fp <- function(x) out$estimate[1] - exp(-(out$estimate[2]+x)/out$estimate[3])
++ 	 }
++ 
++ 
++  	 if (campo[i] == "CAPE")	# CAPE
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] - p[2]*bx - p[3]/(bx+p[4]))))^2)
++ 		#out <- nlm(fun, p=c(0.6, 0.0002, 120, 200), hessian=T)
++ 		#fp <- function(x) (out$estimate[1] - out$estimate[2]*x - out$estimate[3]/(x+out$estimate[4]))
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + exp(p[2]*bx) - p[3]/(bx+p[4]))))^2)
++ 		#out <- nlm(fun, p=c(0.3, -0.0012, 400, 280), hessian=T)
++ 		#fp <- function(x) (out$estimate[1] + exp(out$estimate[2]*x) - out$estimate[3]/(x+out$estimate[4]))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] - exp(-(p[2]+bx)/p[3]))))^2)
++ 		# anche 1 hailpad:
++ 		#out <- nlm(fun, p=c(0.21, 300, 200), hessian=T)
++ 		# almeno 2 hailpads:
++ 		out <- nlm(fun, p=c(0.16, 1100, 600), hessian=T)
++ 		fp <- function(x) out$estimate[1] - exp(-(out$estimate[2]+x)/out$estimate[3])
++ 	 }
++ 
++ 	 if (campo[i] == "CIN")	# CIN
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] * exp(p[2] * bx))))^2)
++ 		out <- nlm(fun, p=c(0.3,0.002), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] * exp(out$estimate[2] * x))
++ 	 }
++ 
++  	 if (campo[i] == "EHI")	# EHI
++ 	 {
++ 	 	#fun <- function(p) sum((newcas*(pro - (p[1] + (bx-p[2])^2 - p[3]*(bx-p[4])^3)))^2)
++ 	 	#out <- nlm(fun, p=c(0.1,0.1,0.5,0.1), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + (x-out$estimate[2])^2 + out$estimate[3]*(x-out$estimate[4])^3)
++ 		#fp <- function(x) (0.75/(1+1.5*exp(15*(-x+0.05))))+(0.75/(1+1.5*exp(30*(x+0.11))))
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] - p[2] * exp(-p[3]*(bx-p[4])^2))))^2)
++ 	 	out <- nlm(fun, p=c(0.3,0.3,25,-0.05), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] - out$estimate[2] * exp(-out$estimate[3]*(x-out$estimate[4])^2))
++ 	 }
++ 
++  	 if (campo[i] == "EL")	# EL
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]/(1+p[2]*exp(0.0007*(-bx+p[3]))))))^2)
++ 	 	#out <- nlm(fun, p=c(0.5,1,4000), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]/(1+out$estimate[2]*exp(0.0007*(-x+out$estimate[3]))))
++ 		fun <- function(p) sum((newcas*(pro - (p[1]-p[2]*(bx-p[3])^2)))^2)
++ 		out <- nlm(fun, p=c(0.3, 0.001, 7500), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] - out$estimate[2]*(x-out$estimate[3])^2)
++ 
++ 	 }
++ 
++ 	 if (campo[i] == "HD")	# HD
++ 	 {
++ 	 	#fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * atan(p[3] + p[4]*bx))))^2)
++ 	 	#out <- nlm(fun, p=c(-17.05,-11.15,-40,-19), hessian=T)
++ 	 	#fp <-  function(x) out$estimate[1]+out$estimate[2]*atan(out$estimate[3]+out$estimate[4]*x)
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx + p[3] * exp(p[4] * bx))))^2)
++ 		out <- nlm(fun, p=c(0.1, 0.022, -0.06, -5), hessian=T)
++ 		fp <-  function(x) out$estimate[1]+out$estimate[2]*x+out$estimate[3]*exp(out$estimate[4]*x)
++ 	 }
++ 
++ 	 if (campo[i] == "Hel")	# Hel
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]+(bx-p[2])^2/p[3])))^2)
++ 		#out <- nlm(fun, p=c(0.23, 10, 250000), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + (x-out$estimate[2])^2/out$estimate[3])
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*exp(bx/p[3]))))^2)
++ 		#out <- nlm(fun, p=c(0.03, 0.05, 160), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*exp(x/out$estimate[3]))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx + p[3] * bx^2 )))^2)
++ 		# anche 1 hailpad:
++ 		#out <- nlm(fun, p=c(0.1,-4e-4, 2e-6), hessian=T)
++ 		# almeno 2 hailpads:
++ 		out <- nlm(fun, p=c(0.04,-4e-8, 1e-6), hessian=T)
++ 		fp <- function(x) (out$estimate[1] + out$estimate[2]*x+out$estimate[3]*x^2)
++ 	 }
++ 
++ 	 if (campo[i] == "KI")	# KI
++ 	 {
++ 		# cambio il 20070406:
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] * exp(p[2] * (bx-20)))))^2)
++ 		#out <- nlm(fun, p=c(37,0.09), hessian=T)
++ 		out <- nlm(fun, p=c(0.05,0.1), hessian=T)	# 0.14, 20
++ 	 	fp <- function(x) (out$estimate[1] * exp(out$estimate[2] * (x - 20)))
++ 	 }
++ 
++ 	 if (campo[i] == "LCL")	# LCL
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1]-p[2]/(1+exp(p[3]*(-bx+p[4]))))))^2)
++ 		out <- nlm(fun, p=c(0.5, 0.5, 0.002, 2000), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]-out$estimate[2]/(1+exp(out$estimate[3]*(-x+out$estimate[4]))))
++ 		# fp <- function(x) (0.45-0.45/(1+exp(0.002*(-x+2000))))
++ 	 }
++ 
++ 	 #if (i == 25)	# LFC		NON VA!
++ 	 #{lines
++ 	 #	#fun <- function(p) sum((newcas*(pro - (p[1]-p[2]/(1+exp(p[3]*(-bx+p[4]))))))^2)
++ 	 #	#out <- nlm(fun, p=c(1.3, 1.45, 500), hessian=T)
++ 	 #	#fp <- function(x) (out$estimate[1]-out$estimate[2]/(1+exp(0.0003*(-x+out$estimate[3]))))
++ 	 # 	fun <- function(p) sum((newcas*(pro - (p[1]*exp(p[2]*(-bx+p[3])))))^2)
++ 	 #	out <- nlm(fun, p=c(0.75, 1.45, 500), hessian=T)
++ 	 #	fp <- function(x) (out$estimate[1]-out$estimate[2]/(1+exp(0.0003*(-x+out$estimate[3]))))
++ 	 #	fun <- function(p) sum((newcas*(pro - (p[1]*exp(1.4*(-bx+p[2])))))^2)
++ 	 #	out <- nlm(fun, p=c(0.75, 500), hessian=T)
++ 	 #	fp <- function(x) (out$estimate[1]*exp(1.4*(-x+out$estimate[2])))
++ 	 #}
++ 
++ 	 if (campo[i] == "LLWu")	# LLWu
++ 	 {
++ 		#fp <- function(x) (0.26 - exp((x-17)/3))
++ 		##fp <- function(x) (0.25 - (x-4)^2/2000)
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2 + p[4]*bx^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.1,0.01,0.01,0.01), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2 + out$estimate[4]*x^3)
++ 	 }
++ 
++  	 if (campo[i] == "LLWv")	# LLWv
++ 	 {
++ 		fun <- function(p) sum((newcas*(pro - ((p[1]-exp(-p[2]*(bx-1)^2)) * 1/(1+exp(p[3]*(bx-p[4]))))))^2)
++ 		out <- nlm(fun, p=c(1.18,0.008,0.06,5), hessian=T)
++ 		fp <- function(x) ((out$estimate[1]-exp(-out$estimate[2]*(x-1)^2)) * 1/(1+exp(out$estimate[3]*(x-out$estimate[4]))))
++ 		#fp <- function(x) (1.2 - 0.96*exp(-1/60*(x-1.2)^2))*1/(1+exp(0.03*(x-25)))
++ 
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2 + p[4]*bx^3)))^2)
++ 	 	#out <- nlm(fun, p=c(0.1,0.01,0.01,0.01), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2 + out$estimate[4]*x^3)
++ 	 }
++ 
++ 	 if (campo[i] == "LRH")	# LRH
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*bx+p[2]*bx^2)))^2)
++ 		#out <- nlm(fun, p=c(0.004, 0.00001), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]*x + out$estimate[2]*x^2)
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*exp(p[2]*bx))))^2)
++ 		#out <- nlm(fun, p=c(0.002, 0.06), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] * exp(out$estimate[2]*x))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx-exp((bx+p[3])/p[4]))))^2)
++ 		# anche 1 hailpad:
++ 		#out <- nlm(fun, p=c(-0.04, 0.002, -105, 3), hessian=T)
++ 		# almeno 2 hailpads:
++ 		out <- nlm(fun, p=c(-0.04, 0.0013, -110, 4.5), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x - exp((x+out$estimate[3])/out$estimate[4]))
++ 	 }
++ 
++  	 if (campo[i] == "MEL")	# MEL
++ 	 {
++ 		#fp <- function(x) (0.17+exp(-0.0000003*(x-6200)^2)*1/(1+exp(0.009*(x-4800))))
++ 		#fun <- function(p) sum((newcas*(pro - (p[4]*(p[1]+exp(-0.0000003*(bx-p[2])^2)*1/(1+exp(0.009*(bx-p[3])))))))^2)
++ 		#out <- nlm(fun, p=c(0.17,6200,4800,0.5), hessian=T)
++ 	 	#fp <- function(x) out$estimate[4]*(out$estimate[1]+exp(-0.0000003*(x-out$estimate[2])^2)*1/(1+exp(0.009*(x-out$estimate[3]))))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1]+(p[2]*(bx-p[3])^2))))^2)
++ 		# anche 1 hailpad:
++ 		#out <- nlm(fun, p=c(0.08,0.000000015,2400), hessian=T)
++ 		# con almeno 2 hailpads:
++ 		out <- nlm(fun, p=c(0.03,0.000000015,2400), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]+(out$estimate[2]*(x-out$estimate[3])^2))
++ 	 }
++ 
++ 	 if (campo[i] == "MRH")	# MRH
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx)))^2)
++ 		#out <- nlm(fun, p=c(-0.2, 0.005), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*exp(p[2]*bx))))^2)
++ 		#out <- nlm(fun, p=c(0.0013, 0.06), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] * exp(out$estimate[2]*x))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx-exp((bx+p[3])/p[4]))))^2)
++ 		# anche 1 pannello:
++ 		#out <- nlm(fun, p=c(-0.04, 0.0023, -111, 7), hessian=T)
++ 		# solo 2 pannelli:
++ 		out <- nlm(fun, p=c(-0.05, 0.0018, -114, 7), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x - exp((x+out$estimate[3])/out$estimate[4]))
++ 	 }
++ 
++ 	 # lascio arctan 20070406:
++ 	 #if (campo[i] == "MLWu")	# MLWu
++ 	 #{
++ 	 #	#fun <- function(p) sum((newcas*(pro - (p[1] * exp(-p[2] * bx))))^2)
++ 	 #	#out <- nlm(fun, p=c(0.1,0.08), hessian=T)	# 0.14, 20
++ 	 #	#fp <- function(x) (out$estimate[1] * exp(-out$estimate[2] * x))
++ 	 #	fun <- function(p) sum((newcas*(pro - (p[1] - p[2] * (bx-p[3])^3)))^2)
++ 	 #	out <- nlm(fun, p=c(0.12,0.00002, 5), hessian=T)	# 0.14, 20
++ 	 #	fp <- function(x) (out$estimate[1] - out$estimate[2] * (x-out$estimate[3])^3)
++ 	 #}
++ 
++ 	 # lascio arctan 20070405:
++ 	 #if (campo[i] == "MLWv")	# MLWv	cambiato il 16/09/2004! (prima era commentato)
++ 	 #{
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*exp(-p[2]*(bx+p[3])))))^2)
++ 		#out <- nlm(fun, p=c(0.2,0.08,10), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]*exp(-out$estimate[2]*(x+out$estimate[3])))
++ 		# cambio il 23/03/04:
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*(bx-p[2])^2)))^2)
++ 		#out <- nlm(fun, p=c(0.0006, 20), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]*(x-out$estimate[2])^2)
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*(bx-p[2])^3 - p[3]/(bx-p[4]))))^2)
++ 		#out <- nlm(fun, p=c(-0.000023, 20, 6, 30), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]*(x-out$estimate[2])^3-out$estimate[3]/(x-out$estimate[4]))
++ 	#	fun <- function(p) sum((newcas*(pro - (-abs((bx-p[2]))/(bx-p[2])*p[1]*(bx-p[2])^2 / (bx+p[3]))))^2)
++ 	#	out <- nlm(fun, p=c(0.001, 12, 30), hessian=T)
++ 	# 	fp <- function(x) (-abs((x-out$estimate[2]))/(x-out$estimate[2])*out$estimate[1]*(x-out$estimate[2])^2/(x+out$estimate[3]))
++ 	# }
++ 
++ 	 #  cambio il 20070406:
++ 	 if (campo[i] == "MaxBuo")	# MaxBuo
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (-0.06 + p[1] * exp(0.065*bx))))^2)
++ 	 	#out <- nlm(fun, p=c(-0.06,0.15, 0.06), hessian=T)	# 0.14, 20
++ 	 	out <- nlm(fun, p=c(0.13), hessian=T)	# 0.14, 20
++ 	 	fp <- function(x) (-0.06 + out$estimate[1] * exp(0.065*x))
++ 	 }
++ 
++ 	 if (campo[i] == "Mix")	# Mix
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - p[4]*(exp(-p[1]*(bx-p[2])^2) * 1/(1+exp(bx-p[3])))))^2)
++ 		#out <- nlm(fun, p=c(0.006,35,14,5), hessian=T)
++ 	 	#fp <- function(x) out$estimate[4]*(exp(-out$estimate[1]*(x-out$estimate[2])^2)*1/(1+exp(x-out$estimate[3])))
++ 
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*bx-0.012*bx/(1+exp(p[3]-bx)))))^2)
++ 
++ 		#out <- nlm(fun, p=c(-0.03,0.04,15), hessian=T)
++ 		# cambio il 14/09/2004:
++ 		#out <- nlm(fun, p=c(-0.03,0.04,16), hessian=T)
++ 		#fp <- function(x) out$estimate[1]+out$estimate[2]*x-0.012*x/(1+exp(out$estimate[3]-x))
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*(p[2]+bx) - p[3]/(p[4]-bx))))^2)
++ 		#out <- nlm(fun, p=c(0.06,7,10,25), hessian=T)
++ 		#fp <- function(x) out$estimate[1]*(out$estimate[2]+x)-out$estimate[3]/(out$estimate[4]-x)
++ 		# cambio il 20070406:
++ 		fun <- function(p) sum((newcas*(pro - (p[1]*bx-p[2]*exp((bx-26)*p[3]))))^2)
++ 		out <- nlm(fun, p=c(0.012, 12, 0.5), hessian=T)
++ 		fp <- function(x) (out$estimate[1]*x - out$estimate[2]*exp((x-26)*out$estimate[3]))
++ 	 }
++ 
++ 	 # aggiungo il 15/09/2004:
++ 	 if (campo[i] == "PWE")	# PWE
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] * exp(p[2]*bx) - p[3])))^2)
++ 	 	#out <- nlm(fun, p=c(0.01, 0.1, 0.1), hessian=T)
++ 		# cambiato il 26/04/2007:
++ 	 	out <- nlm(fun, p=c(0.0006, 0.12, -0.03), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] * exp(out$estimate[2]*x) - out$estimate[3])
++ 	 }
++ 
++ 	 if (campo[i] == "PBL")	# PBL
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*(bx - p[3])^2)))^2)
++ 		# anche 1 hailpad:
++ 	 	#out <- nlm(fun, p=c(0.07, 0.000000025, 2900), hessian=T)
++ 		# almeno 2 hailpads:
++ 	 	out <- nlm(fun, p=c(0.03, 0.00000001, 2900), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*(x - out$estimate[3])^2)
++ 	 }
++ 
++ 	 if (campo[i] == "Rel_Hel")	# Rel_Hel
++ 	 {
++ 		fun <- function(p) sum((newcas*(pro - (0.04 + p[1] + 0.000002*bx^2)))^2)
++ 	 	out <- nlm(fun, p=c(0.1), hessian=T)
++ 	 	fp <- function(x) (0.04 + out$estimate[1] + 0.000002*x^2)
++ 
++ 		##fp <- function(x) (0.9-0.68*exp(-0.000008*(x-50)^2))
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2 + p[4]*bx^3)))^2)
++ 	 	#out <- nlm(fun, p=c(0.2,-0.000003,0.000003,-0.000000003), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2 + out$estimate[4]*x^3)	 
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*exp(p[3]*(bx-p[4])))))^2)
++ 	 	#out <- nlm(fun, p=c(0.1,0.1,0.003, 200), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*exp(out$estimate[3]*(x-out$estimate[4])))
++ 	 }
++ 
++ 	 # aggiungo il 15/09/2004:
++  	 if (campo[i] == "SWEAT")	# SWEAT
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2)))^2)
++ 	 	#out <- nlm(fun, p=c(0.03, 0.002, 0.000001), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2)
++ 		# cambio il 20070406:
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] * exp(p[2]*bx))))^2)
++ 		#out <- nlm(fun, p=c(0.04, 0.008), hessian=T)
++ 		#fp <- function(x) (out$estimate[1] * exp(out$estimate[2]*x))
++ 		# cambio il 26/04/07:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * atan(p[3] + p[4]*bx))))^2)
++ 		out <- nlm(fun, p=c(0.2,0.1,-3,0.01), hessian=T)
++ 		fp <-  function(x) out$estimate[1]+out$estimate[2]*atan(out$estimate[3]+out$estimate[4]*x)
++ 	 }
++ 
++  	 if (campo[i] == "Shear")	# Shear
++ 	 {
++ 		#fp <- function(x) (1.2-exp(-4000*(x-0.004)^2)+0.3*exp(1000*(0.002-x)))
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2 + p[4]*bx^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.4,-4,35,-80), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2 + out$estimate[4]*x^3)
++ 	 }
++ 
++  	 if (campo[i] == "Shear3")	# Shear3
++ 	 {
++ 		#fp <- function(x) (1.2-exp(-4000*(x-0.004)^2)+0.3*exp(1000*(0.002-x)))
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx + p[3]*bx^2 + p[4]*bx^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.4,-4,35,-80), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x + out$estimate[3]*x^2 + out$estimate[4]*x^3)
++ 	 }
++ 
++ 	 if (campo[i] == "Tbase")	# Tbase
++ 	 {
++ 	 	#fp <- function(x) (0.2 * exp(0.06*x) - 0.04)
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] * exp(p[2]*bx) - p[3])))^2)
++ 	 	out <- nlm(fun, p=c(0.2, 0.06, 0.04), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] * exp(out$estimate[2]*x) - out$estimate[3])
++ 	 }
++ 
++ 	 if (campo[i] == "Thetae")	# Thetae
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - p[1]*(exp(-0.0004*(bx-p[2])^2) * 1/(1+exp(bx-p[3])))))^2)
++ 		# originali:  p=c(1,-0.003,380,345)
++ 		#out <- nlm(fun, p=c(0.8,375,344), hessian=T)
++ 	 	#fp <- function(x) out$estimate[1]*(exp(-0.0004*(x-out$estimate[2])^2)*1/(1+exp(x-out$estimate[3])))
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]-p[2]*(bx-p[3])^2+p[4]*bx)))^2)
++ 		#out <- nlm(fun, p=c(-0.7,0.0001,310,0.003), hessian=T)
++ 		#fp <- function(x) (out$estimate[1] -out$estimate[2]*(x-out$estimate[3])^2+out$estimate[4]*x)
++ 		# cambiato il 23/04/07:
++ 		fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*exp(p[3]*(bx-p[4])))))^2)
++ 		out <- nlm(fun, p=c(-0.02, 0.1, 0.08, 320), hessian=T)
++ 		fp <- function(x) (out$estimate[1] +out$estimate[2]*exp(out$estimate[3]*(x-out$estimate[4])))
++ 	 }
++ 
++ 	 if (campo[i] == "Trop")	# Trop
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx)))^2)
++ 	 	#out <- nlm(fun, p=c(0.6,-3e-5), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 		# cambio il 20070406:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx)))^2)
++ 	 	out <- nlm(fun, p=c(0.32,-2e-5), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 	 }
++ 
++ 
++ 	 if (campo[i] == "UpDr")	# UpDr
++ 	 {
++ 	 	# cambio il 20070406:
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx)))^2)
++ 	 	out <- nlm(fun, p=c(0.04, 0.0065), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 	 }
++ 
++ 	 if (campo[i] == "VFlux")	# VFlux
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*(bx-p[3])^2)))^2)
++ 	 	#out <- nlm(fun, p=c(0.17, 180, 0.1), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1] + out$estimate[2]*(x-out$estimate[3])^2)
++ 		# cambio il 20070406:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx + p[3] * bx^2 )))^2)
++ 		out <- nlm(fun, p=c(0.06,-1.2, 67), hessian=T)
++ 		fp <- function(x) (out$estimate[1] + out$estimate[2]*x+out$estimate[3]*x^2)
++ 	 }
++ 
++ 	 if (campo[i] == "VVstd")	# VVstd
++ 	 {
++ 		#fun <- function(p) sum((newcas*(pro - (p[1]*exp(p[2]*bx))))^2)
++ 		#out <- nlm(fun, p=c(0.09,0.8), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]*exp(out$estimate[2]*x))
++ 		# cambio il 20070405:
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx + p[3] * bx^2 + p[4]*bx^3)))^2)
++ 		# anche 1 hailpad:
++ 		#out <- nlm(fun, p=c(0.04,0.2, -0.2, 0.1), hessian=T)
++ 		# almeno 2 hailpads:
++ 		out <- nlm(fun, p=c(-0.01,0.2, -0.17, 0.07), hessian=T)
++ 		fp <- function(x) (out$estimate[1] + out$estimate[2]*x+out$estimate[3]*x^2+out$estimate[4]*x^3)
++ 	 }
++ 
++ 	 if (campo[i] == "VV")	# VV
++ 	 {
++ 		fun <- function(p) sum((newcas*(pro - (p[1]+p[2]*(bx-p[3])^2)))^2)
++ 		out <- nlm(fun, p=c(0.18,0.05,4.2), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]+out$estimate[2]*(x-out$estimate[3])^2)
++ 	 }
++ 
++ 	 # aggiungo il 14/09/2004:
++ 	 if (campo[i] == "WBZ")	# WBZ
++ 	 {
++ 	 	#fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx - p[3] * (bx-2800)^2)))^2)
++ 		#out <- nlm(fun, p=c(0.16, 0.00002, 0.000000025), hessian=T)
++ 	 	#fp <- function(x) (out$estimate[1]  + out$estimate[2] * x - out$estimate[3]*(x-2800)^2)
++ 		# cambio il 20070406:
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx)))^2)
++ 		out <- nlm(fun, p=c(0.015, 0.000027), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]  + out$estimate[2] * x)
++ 	 }
++ 
++ 	 # aggiungo il 23/04/2007:
++ 	 if (campo[i] == "LLWspd")	# LLWspd
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * (p[3]-bx)^2)))^2)
++ 		out <- nlm(fun, p=c(0.065, 0.001, 8), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]  + out$estimate[2] * (out$estimate[3]-x)^2)
++ 	 }
++ 
++ 	 #if (campo[i] == "D_CAP")	# D_CAP
++ 	 #{
++ 	 #	fun <- function(p) sum((newcas*(pro - (p[1] * bx + p[2])))^2)
++ 	 #	out <- nlm(fun, p=c(-0.09, 0.25), hessian=T)
++ 	 #	fp <- function(x) (out$estimate[1] * x + out$estimate[2])
++ 	 #}
++ 
++ 	 # aggiungo il 14/09/2004:
++ 	 #if (campo[i] == "D_CAPE")	# D_CAPE
++ 	 #{
++ 	 #	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * bx^2)))^2)
++ 	 #	out <- nlm(fun, p=c(0.1, 0.0000005), hessian=T)
++ 	 #	fp <- function(x) (out$estimate[1] + out$estimate[2] * x^2)
++ 	 #}
++ 
++ 	 # aggiungo il 15/09/2004: non va
++ 	 if (campo[i] == "D_CIN")	# D_CIN
++ 	 {
++ 	 	#fun <- function(p) sum((newcas*(pro - (0.08 + p[1] * bx)))^2)
++ 		# tolgo il peso dei casi perche' ne ho troppi sullo zero:
++ 	 	fun <- function(p) sum((pro - (p[1] + p[2] * bx))^2)
++ 	 	out <- nlm(fun, p=c(0.1, 0.00006), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1]  + out$estimate[2] * x)
++ 	 }
++ 
++ 	 if (campo[i] == "D_DT500")	# D_DT500
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] - p[2] * (bx-p[3])^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.15, 0.0002, 5), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] - out$estimate[2] * (x-out$estimate[3])^3)
++ 	 }
++ 
++ 	 if (campo[i] == "D_LFC")	# D_LFC
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] - p[2]*exp(bx/3000))))^2)
++ 		out <- nlm(fun, p=c(0.55, 0.12), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] - out$estimate[2]*exp(x/3000))
++ 	 }
++ 
++ 	 #if (campo[i] == "D_LI")	# D_LI
++ 	 #{
++ 	 #	fun <- function(p) sum((newcas*(pro - (p[1] - p[2] * (bx-p[3])^3)))^2)
++ 	 #	out <- nlm(fun, p=c(0.12, 0.0002, 5), hessian=T)
++ 	 #	fp <- function(x) (out$estimate[1] - out$estimate[2] * (x-out$estimate[3])^3)
++ 	 #}
++ 
++ 	 if (campo[i] == "D_LRH")	# D_LRH
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * (bx-p[3])^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.1, 0.00001, -20), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2] * (x-out$estimate[3])^3)
++ 	 }
++ 
++ 	 if (campo[i] == "D_MRH")	# D_MRH
++ 	 {
++ 	 	fun <- function(p) sum((newcas*(pro - (p[1] + p[2] * (bx-p[3])^3)))^2)
++ 	 	out <- nlm(fun, p=c(0.1, 0.00001, -20), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2] * (x-out$estimate[3])^3)
++ 	 }
++ 
++ 	 if (campo[i] == "D_Trop")	# D_Trop
++ 	 {
++ 		fun <- function(p) sum((newcas*(pro - (p[1] + p[2]*bx)))^2)
++ 	 	out <- nlm(fun, p=c(0.25,-1e-5), hessian=T)
++ 	 	fp <- function(x) (out$estimate[1] + out$estimate[2]*x)
++ 	 }
++ 
++ 	# non lo fa automaticamente:
++  	 #if (i == 13)	# BRI
++ 	 #{
++ 	 #	fp <- function(x) (0.45 - exp(-(x+40)/30))
++ 	 #}
++ 
++ 
++ 	 #if (i == ?)	# D_MEL
++ 	 #{
++ 	 #	fp <- function(x) (x/14000 +0.26)
++ 	 #}
++ 
++  	 #if (i == ?)	# D_Shear
++ 	 #{
++ 	 #	fp <- function(x)  (exp(300*x)/15+0.18 + 0.5/(1+exp(2000*(x+0.005))))
++ 	 #}
++ 
++  	 #if (i == ?)	# D_ShowI
++ 	 #{
++ 	 #	fp <- function(x)  (-0.015*x+0.26)
++ 	 #}
++ 
++ 	 print(fp)
++ 	 print(out$estimate)
++ 
++ 	 # fine definizione funzioni di probabilita'.
++ 	 #************************************************************
++ 
++ 	 # RICORDADATI di filtrare cosi':
++ 	 ##fp <- function(x) {if (f(x)>0) {if (f(x)<1 f(x) else 1} else 0}
++ 
++ 	 jn <- 1
++ 	 jy <- 1
++ 	 # Transform real data into its probability:
++ 	 for (j in 1:totcasi)
++ 	 {
++ 	  if (is.na(dati[j,i]))
++ 		prodati[j,i] <- NaN
++ 	  else
++ 	  {	# if HH set equal to the class probability, not to the interpolated function fp:
++ 		if (i == 4)
++ 		{
++ 			hour <- (as.integer((dati[j,i] + 3)/6) + 1)
++ 			if (hour == 5)		# HH = 24
++ 				hour <- 1	
++ 			prodati[j,i] <- pro[hour]
++ 		}
++ 		else
++ 		{
++ 		 prob <- fp(dati[j,i])
++ 		 if (prob > 1)
++ 			prob <- 1
++ 		 if (prob < 0)
++ 			prob <- 0
++ 	  	 prodati[j,i] <- prob
++ 		}
++ 	  }
++ 	  if (activity[j] > acttr)
++ 	  {
++ 		proyes[jy] <- prodati[j,i]
++ 		datyes[jy] <- dati[j,i]
++ 		jy <- jy + 1
++ 	  }
++ 	  else
++ 	  {
++ 		prono[jn] <- prodati[j,i]
++ 		datno[jy] <- dati[j,i]
++ 		jn <- jn + 1
++ 	  }
++ 	 }
++ 
++ 	 quapt5 <- quantile(prodati[,i],probs=0.05,na.rm=TRUE)
++ 	 quapt50 <- quantile(prodati[,i],probs=0.5,na.rm=TRUE)
++ 	 quapt95 <- quantile(prodati[,i],probs=0.95,na.rm=TRUE)
++ 	 cat("\t", vtot, "Prob. tot. cases\t5% = ", quapt5, "\t50% = ", quapt50, "\t95% = ", quapt95, "\n")
++ 
++ 	 codati <- cor(activity, dati[,i], use="complete.obs")
++ 	 cat("\tCorrelation for original values:\t", (codati)^2, "\n")
++ 	 copro <- cor(activity, prodati[,i], use="complete.obs")
++ 	 cat("\tCorrelation for probability values:\t", (copro)^2, "\n")
++ 	 proymed[i] <- mean(proyes, na.rm=TRUE) 
++ 	 pronmed[i] <- mean(prono, na.rm=TRUE) 
++ 	 datymed[i] <- mean(datyes, na.rm=TRUE) 
++ 	 datnmed[i] <- mean(datno, na.rm=TRUE) 
++ 	 discr_pro <- abs((proymed[i]-pronmed[i])/(quapt95-quapt5))
++ 	 discr_dat <- abs((datymed[i]-datnmed[i])/(quat95-quat5))
++ 	 cat("\tDifference of mean value for active/non_active cases:\t",discr_dat, "\n")
++ 	 cat("\tDifference of mean probability for active/non_active cases:\t",discr_pro, "\n")
++ 
++ 	campo[i] <- paste("P(", campo[i], ")", sep="")
++ 	cat("Will use:", campo[i],"\n")
++ 
++ } 
+4 HH 
+HH 	Valid cases = 8100	Min = 6 	Max = 24.18 
+	Median = 18 	Mean = 15.23111 	Standard Deviation = 6.705961 
+	 8100 Total cases	5% =  6 	50% =  18 	95% =  24 
+	 343 Active cases	5% =  6 	50% =  12 	95% =  24 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x)
+[1]  0.04737079 -0.00052385
+	 8100 Prob. tot. cases	5% =  0.01763763 	50% =  0.01834021 	95% =  0.06844281 
+	Correlation for original values:	 8.404179e-05 
+	Correlation for probability values:	 7.947424e-05 
+	Difference of mean value for active/non_active cases:	 0.1806782 
+	Difference of mean probability for active/non_active cases:	 0.02114255 
+Will use: P(HH) 
+5 JJJ 
+JJJ 	Valid cases = 8100	Min = 91 	Max = 275.83 
+	Median = 181.5 	Mean = 182.2102 	Standard Deviation = 52.7722 
+	 8100 Total cases	5% =  100 	50% =  181.5 	95% =  265 
+	 343 Active cases	5% =  109.5125 	50% =  186.25 	95% =  258.4625 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x)
+[1] 3.327807e-02 5.361079e-05
+	 8100 Prob. tot. cases	5% =  0.03863914 	50% =  0.04300842 	95% =  0.04748493 
+	Correlation for original values:	 0.0002339027 
+	Correlation for probability values:	 0.0002339027 
+	Difference of mean value for active/non_active cases:	 0.006255266 
+	Difference of mean probability for active/non_active cases:	 0.02428864 
+Will use: P(JJJ) 
+18 BOY 
+BOY 	Valid cases = 8093	Min = 85.9671 	Max = 102.3518 
+	Median = 96.48236 	Mean = 96.37063 	Standard Deviation = 1.889920 
+	 8093 Total cases	5% =  93.06655 	50% =  96.48236 	95% =  99.19667 
+	 343 Active cases	5% =  94.77066 	50% =  97.31763 	95% =  99.50971 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x)
+[1] -1.80000923  0.01910521
+	 8093 Prob. tot. cases	5% =  0 	50% =  0.04330698 	95% =  0.09516437 
+	Correlation for original values:	 0.008635732 
+	Correlation for probability values:	 0.008359659 
+	Difference of mean value for active/non_active cases:	 0.07642131 
+	Difference of mean probability for active/non_active cases:	 0.1462962 
+Will use: P(BOY) 
+19 BRI 
+BRI 	Valid cases = 7879	Min = 0 	Max = 1413.163 
+	Median = 1.15013 	Mean = 27.75397 	Standard Deviation = 98.13074 
+	 7879 Total cases	5% =  0 	50% =  1.15013 	95% =  138.6489 
+	 317 Active cases	5% =  0 	50% =  12.03568 	95% =  256.5406 
+function (x) 
+out$estimate[1] - exp(-(out$estimate[2] + x)/out$estimate[3])
+[1]  0.1113498 49.9996535 20.0008695
+	 7879 Prob. tot. cases	5% =  0.02925445 	50% =  0.03384209 	95% =  0.1112697 
+	Correlation for original values:	 0.003413919 
+	Correlation for probability values:	 0.01999770 
+	Difference of mean value for active/non_active cases:	 0.1453016 
+	Difference of mean probability for active/non_active cases:	 0.2521251 
+Will use: P(BRI) 
+20 CAP 
+CAP 	Valid cases = 8092	Min = 0.05328 	Max = 47.26152 
+	Median = 5.674205 	Mean = 7.111272 	Standard Deviation = 5.304935 
+	 8092 Total cases	5% =  1.099029 	50% =  5.674205 	95% =  17.44159 
+	 343 Active cases	5% =  0.777913 	50% =  3.279435 	95% =  13.61405 
+function (x) 
+out$estimate[1] + out$estimate[2] * atan(out$estimate[3] + out$estimate[4] * 
+    x)
+[1]  0.06860212 -0.03580851 -1.15123014  0.46896312
+	 8092 Prob. tot. cases	5% =  0.01741523 	50% =  0.03330266 	95% =  0.08888215 
+	Correlation for original values:	 0.008237559 
+	Correlation for probability values:	 0.01491397 
+	Difference of mean value for active/non_active cases:	 0.09262161 
+	Difference of mean probability for active/non_active cases:	 0.2021585 
+Will use: P(CAP) 
+21 CAPE 
+CAPE 	Valid cases = 8100	Min = -99 	Max = 4553.447 
+	Median = 26.51571 	Mean = 222.2836 	Standard Deviation = 432.1013 
+	 8100 Total cases	5% =  0 	50% =  26.51571 	95% =  1149.732 
+	 343 Active cases	5% =  0 	50% =  403.0875 	95% =  1924.267 
+function (x) 
+out$estimate[1] - exp(-(out$estimate[2] + x)/out$estimate[3])
+[1]    0.1603886 1100.0000001  599.9999998
+	 8100 Prob. tot. cases	5% =  0.0005088982 	50% =  0.007420591 	95% =  0.1368604 
+	Correlation for original values:	 0.03436516 
+	Correlation for probability values:	 0.04164498 
+	Difference of mean value for active/non_active cases:	 0.1035250 
+	Difference of mean probability for active/non_active cases:	 0.3364334 
+Will use: P(CAPE) 
+22 CIN 
+CIN 	Valid cases = 8100	Min = -2128.821 	Max = 131.6761 
+	Median = -60.83845 	Mean = -335.6074 	Standard Deviation = 476.3109 
+	 8100 Total cases	5% =  -1294.517 	50% =  -60.83845 	95% =  0.0119685 
+	 343 Active cases	5% =  -185.8872 	50% =  -14.87761 	95% =  10.57884 
+function (x) 
+(out$estimate[1] * exp(out$estimate[2] * x))
+[1] 0.066873944 0.004935136
+	 8100 Prob. tot. cases	5% =  0.0001123867 	50% =  0.04952925 	95% =  0.0668779 
+	Correlation for original values:	 0.01565241 
+	Correlation for probability values:	 0.02239628 
+	Difference of mean value for active/non_active cases:	 0.03297935 
+	Difference of mean probability for active/non_active cases:	 0.3001702 
+Will use: P(CIN) 
+23 DT500 
+DT500 	Valid cases = 8065	Min = -11.29063 	Max = 17.14298 
+	Median = 1.10783 	Mean = 1.310651 	Standard Deviation = 3.447341 
+	 8065 Total cases	5% =  -3.997232 	50% =  1.10783 	95% =  7.331474 
+	 337 Active cases	5% =  -5.955348 	50% =  -1.88662 	95% =  2.332842 
+function (x) 
+out$estimate[1] + out$estimate[2] * atan(out$estimate[3] + out$estimate[4] * 
+    x)
+[1]  0.11512200 -0.09530089  0.95738720  0.29397436
+	 8065 Prob. tot. cases	5% =  0 	50% =  0.02851716 	95% =  0.1355499 
+	Correlation for original values:	 0.03657988 
+	Correlation for probability values:	 0.04693199 
+	Difference of mean value for active/non_active cases:	 0.0725213 
+	Difference of mean probability for active/non_active cases:	 0.3399123 
+Will use: P(DT500) 
+24 DTC 
+DTC 	Valid cases = 8065	Min = -12.33847 	Max = 12.64872 
+	Median = 0.77663 	Mean = 0.744191 	Standard Deviation = 2.961509 
+	 8065 Total cases	5% =  -4.190752 	50% =  0.77663 	95% =  5.543278 
+	 337 Active cases	5% =  -6.29533 	50% =  -1.99461 	95% =  1.48342 
+function (x) 
+out$estimate[1] + out$estimate[2] * atan(out$estimate[3] + out$estimate[4] * 
+    x)
+[1]  0.09113585 -0.07572633  0.85468584  0.41435218
+	 8065 Prob. tot. cases	5% =  0 	50% =  0.02553353 	95% =  0.1458592 
+	Correlation for original values:	 0.03955062 
+	Correlation for probability values:	 0.0478782 
+	Difference of mean value for active/non_active cases:	 0.08380951 
+	Difference of mean probability for active/non_active cases:	 0.3399405 
+Will use: P(DTC) 
+25 EHI 
+EHI 	Valid cases = 7998	Min = -0.58246 	Max = 3.65143 
+	Median = 0.000975 	Mean = 0.05757576 	Standard Deviation = 0.2017002 
+	 7998 Total cases	5% =  -0.0065135 	50% =  0.000975 	95% =  0.320852 
+	 323 Active cases	5% =  -0.0609115 	50% =  0.05092 	95% =  0.887069 
+function (x) 
+(out$estimate[1] - out$estimate[2] * exp(-out$estimate[3] * (x - 
+    out$estimate[4])^2))
+[1]  0.15162865  0.12510674 24.99894932  0.03485988
+	 7998 Prob. tot. cases	5% =  0.02676167 	50% =  0.03026538 	95% =  0.1362958 
+	Correlation for original values:	 0.02047283 
+	Correlation for probability values:	 0.03579512 
+	Difference of mean value for active/non_active cases:	 0.14133 
+	Difference of mean probability for active/non_active cases:	 0.2633006 
+Will use: P(EHI) 
+26 EL 
+EL 	Valid cases = 5727	Min = 378 	Max = 13962.5 
+	Median = 5879 	Mean = 6674.236 	Standard Deviation = 3137.52 
+	 5727 Total cases	5% =  2594.3 	50% =  5879 	95% =  11738.4 
+	 323 Active cases	5% =  3945.05 	50% =  8822.5 	95% =  11992.85 
+function (x) 
+(out$estimate[1] - out$estimate[2] * (x - out$estimate[3])^2)
+[1] 3.000000e-01 1.765324e-08 7.500000e+03
+	 5727 Prob. tot. cases	5% =  0 	50% =  0.1316633 	95% =  0.2971287 
+	Correlation for original values:	 0.01761138 
+	Correlation for probability values:	 0.005803593 
+	Difference of mean value for active/non_active cases:	 0.07601814 
+	Difference of mean probability for active/non_active cases:	 0.1193701 
+Will use: P(EL) 
+27 HD 
+HD 	Valid cases = 8065	Min = 0 	Max = 25.20836 
+	Median = 0 	Mean = 1.308285 	Standard Deviation = 2.317458 
+	 8065 Total cases	5% =  0 	50% =  0 	95% =  6.24894 
+	 337 Active cases	5% =  0 	50% =  2.93267 	95% =  10.51762 
+function (x) 
+out$estimate[1] + out$estimate[2] * x + out$estimate[3] * exp(out$estimate[4] * 
+    x)
+[1]  0.03238928  0.01681860 -0.02140985 -4.99993831
+	 8065 Prob. tot. cases	5% =  0.01097943 	50% =  0.01097943 	95% =  0.1374877 
+	Correlation for original values:	 0.04725559 
+	Correlation for probability values:	 0.05001497 
+	Difference of mean value for active/non_active cases:	 0.1414980 
+	Difference of mean probability for active/non_active cases:	 0.4082846 
+Will use: P(HD) 
+28 Hel 
+Hel 	Valid cases = 7957	Min = -468.0362 	Max = 485.7551 
+	Median = 10.13301 	Mean = 16.71373 	Standard Deviation = 55.87437 
+	 7957 Total cases	5% =  -51.24707 	50% =  10.13301 	95% =  103.9955 
+	 319 Active cases	5% =  -74.11655 	50% =  14.04445 	95% =  116.4195 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x + out$estimate[3] * x^2)
+[1]  4e-02 -4e-08  1e-06
+	 7957 Prob. tot. cases	5% =  0.04000305 	50% =  0.04048619 	95% =  0.05394447 
+	Correlation for original values:	 5.99579e-05 
+	Correlation for probability values:	 0.0003853834 
+	Difference of mean value for active/non_active cases:	 0.0120169 
+	Difference of mean probability for active/non_active cases:	 0.08352332 
+Will use: P(Hel) 
+29 KI 
+KI 	Valid cases = 8075	Min = -48.26924 	Max = 41.98273 
+	Median = 25.02305 	Mean = 22.52419 	Standard Deviation = 9.878207 
+	 8075 Total cases	5% =  2.966827 	50% =  25.02305 	95% =  33.54709 
+	 343 Active cases	5% =  18.67296 	50% =  29.69661 	95% =  36.26221 
+function (x) 
+(out$estimate[1] * exp(out$estimate[2] * (x - 20)))
+[1] 0.01869990 0.12396460
+	 8075 Prob. tot. cases	5% =  0.002263719 	50% =  0.03485506 	95% =  0.1002712 
+	Correlation for original values:	 0.01841052 
+	Correlation for probability values:	 0.0331473 
+	Difference of mean value for active/non_active cases:	 0.05171177 
+	Difference of mean probability for active/non_active cases:	 0.2923943 
+Will use: P(KI) 
+30 LCL 
+LCL 	Valid cases = 8065	Min = 225.9644 	Max = 7112.134 
+	Median = 1799.494 	Mean = 1831.338 	Standard Deviation = 732.2299 
+	 8065 Total cases	5% =  724.41 	50% =  1799.494 	95% =  3040.191 
+	 337 Active cases	5% =  632.7775 	50% =  1371.131 	95% =  2505.197 
+function (x) 
+(out$estimate[1] - out$estimate[2]/(1 + exp(out$estimate[3] * 
+    (-x + out$estimate[4]))))
+[1]    0.02089039   -0.03018904   -2.16181240 1999.99998516
+	 8065 Prob. tot. cases	5% =  0.02089039 	50% =  0.05107943 	95% =  0.05107943 
+	Correlation for original values:	 0.01120484 
+	Correlation for probability values:	 0.007761579 
+	Difference of mean value for active/non_active cases:	 0.008749916 
+	Difference of mean probability for active/non_active cases:	 0.2148929 
+Will use: P(LCL) 
+31 LFC 
+LFC 	Valid cases = 5727	Min = 254 	Max = 8648.11 
+	Median = 2379 	Mean = 2448.122 	Standard Deviation = 968.6321 
+	 5727 Total cases	5% =  1040.6 	50% =  2379 	95% =  4061.3 
+	 323 Active cases	5% =  967.2 	50% =  1914 	95% =  3364.05 
+function (x) 
+out$estimate[1] + out$estimate[2] * atan(out$estimate[3] + out$estimate[4] * 
+    x)
+[1]  0.2751864 -0.1381997  0.9999997  0.9994769
+	 5727 Prob. tot. cases	5% =  0.0581369 	50% =  0.05816096 	95% =  0.05823561 
+	Correlation for original values:	 0.01226677 
+	Correlation for probability values:	 0.006634096 
+	Difference of mean value for active/non_active cases:	 0.0671746 
+	Difference of mean probability for active/non_active cases:	 0.1390302 
+Will use: P(LFC) 
+32 LI 
+LI 	Valid cases = 8065	Min = -10.1637 	Max = 16.76169 
+	Median = 0.76158 	Mean = 1.012336 	Standard Deviation = 3.253099 
+	 8065 Total cases	5% =  -3.823432 	50% =  0.76158 	95% =  6.687908 
+	 337 Active cases	5% =  -5.745083 	50% =  -1.62458 	95% =  2.124483 
+function (x) 
+out$estimate[1] + out$estimate[2] * atan(out$estimate[3] + out$estimate[4] * 
+    x)
+[1]  0.3997987 -0.3012489  2.4984045  0.2933223
+	 8065 Prob. tot. cases	5% =  0 	50% =  0.03266636 	95% =  0.1158237 
+	Correlation for original values:	 0.03257920 
+	Correlation for probability values:	 0.04215848 
+	Difference of mean value for active/non_active cases:	 0.07431867 
+	Difference of mean probability for active/non_active cases:	 0.3728977 
+Will use: P(LI) 
+33 LLWu 
+LLWu 	Valid cases = 8100	Min = -14.67505 	Max = 46.62327 
+	Median = 0.750145 	Mean = 1.251964 	Standard Deviation = 3.347061 
+	 8100 Total cases	5% =  -2.933647 	50% =  0.750145 	95% =  7.188576 
+	 343 Active cases	5% =  -3.133024 	50% =  0.85274 	95% =  5.629718 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x + out$estimate[3] * x^2 + 
+    out$estimate[4] * x^3)
+[1]  4.365386e-02  7.572722e-04 -1.843755e-04 -5.531997e-06
+	 8100 Prob. tot. cases	5% =  0.03638507 	50% =  0.04352265 	95% =  0.04438096 
+	Correlation for original values:	 0.0002529626 
+	Correlation for probability values:	 0.0005810197 
+	Difference of mean value for active/non_active cases:	 0.004667271 
+	Difference of mean probability for active/non_active cases:	 0.06439439 
+Will use: P(LLWu) 
+34 LLWv 
+LLWv 	Valid cases = 8100	Min = -15.96954 	Max = 18.58987 
+	Median = -0.516415 	Mean = -0.442218 	Standard Deviation = 2.493931 
+	 8100 Total cases	5% =  -3.998870 	50% =  -0.516415 	95% =  3.610331 
+	 343 Active cases	5% =  -6.143485 	50% =  -1.4831 	95% =  4.097329 
+function (x) 
+((out$estimate[1] - exp(-out$estimate[2] * (x - 1)^2)) * 1/(1 + 
+    exp(out$estimate[3] * (x - out$estimate[4]))))
+[1] 1.046964411 0.004699587 0.020613337 4.999443860
+	 8100 Prob. tot. cases	5% =  0.02453948 	50% =  0.03368043 	95% =  0.09260223 
+	Correlation for original values:	 0.004363304 
+	Correlation for probability values:	 0.008421594 
+	Difference of mean value for active/non_active cases:	 0.03245997 
+	Difference of mean probability for active/non_active cases:	 0.2171297 
+Will use: P(LLWv) 
+35 LRH 
+LRH 	Valid cases = 8065	Min = 15.08026 	Max = 100.8404 
+	Median = 62.01254 	Mean = 62.91284 	Standard Deviation = 14.47367 
+	 8065 Total cases	5% =  40.10087 	50% =  62.01254 	95% =  88.1428 
+	 337 Active cases	5% =  48.77887 	50% =  70.5454 	95% =  88.91344 
+function (x) 
+(out$estimate[1] + out$estimate[2] * x - exp((x + out$estimate[3])/out$estimate[4]))
+[1] -4.000010e-02  1.323918e-03 -1.100000e+02  4.500000e+00
+	 8065 Prob. tot. cases	5% =  0.01258141 	50% =  0.04173802 	95% =  0.06793868 
+	Correlation for original values:	 0.009621983 
+	Correlation for probability values:	 0.01106864 
+	Difference of mean value for active/non_active cases:	 0.02796428 
+	Difference of mean probability for active/non_active cases:	 0.1601168 
+Will use: P(LRH) 
+36 MEL 
+MEL 	Valid cases = 8065	Min = 428 	Max = 5797.16 
+	Median = 3260 	Mean = 3241.812 	Standard Deviation = 845.6958 
+	 8065 Total cases	5% =  1895.2 	50% =  3260 	95% =  4584 
+	 337 Active cases	5% =  1896 	50% =  3573 	95% =  4836 

@@ -1,0 +1,185 @@
+<x-rich>
+
+
+Inizio del messaggio inoltrato:
+
+
+<excerpt><bold><fontfamily><param>Helvetica</param><color><param>0000,0000,0000</param>Da:
+</color></fontfamily></bold><fontfamily><param>Helvetica</param>"Agostino.Manzato@osmer.fvg.it"
+<<agostino.manzato@osmer.fvg.it>
+
+<bold><color><param>0000,0000,0000</param>Data: </color></bold>13
+dicembre 2002 9:53:49 CET
+
+<bold><color><param>0000,0000,0000</param>A: </color></bold>znorter
+<<znorter@inwind.it>, agostino.manzato@libero.it
+
+<bold><color><param>0000,0000,0000</param>Oggetto: </color>Re: ...solo
+sottolineature del Unico definitivo upgrade
+
+<color><param>0000,0000,0000</param>Rispondere-A:
+</color></bold>agostino.manzato@osmer.fvg.it
+
+</fontfamily>
+
+znorter wrote:
+
+
+Ieri sera sono tornato relativamente presto (alle 22) e
+
+ho avuto l'insana idea di smontare l'EAR per vedere la
+
+scheda da sotto (tranquillo: adesso e' come prima).
+
+Infatti per dissaldare qualsiasi cosa bisogna farlo da 
+
+sotto. Beh, non ci crederai ma ho perso 1 ora per svitare 
+
+tutto lo svitabile e capire che avrei appena dovuto a
+
+dissaldare tutti i fili del pannello posteriore!
+
+Questo non per dirti -solo- che ho perso 1 ora, ma per
+
+farti capire che metterci le mani e' una cosa che porta
+
+via molto tempo.
+
+
+Passando alle modifiche di Thorsten (quello di TNT?)
+
+lui cambia praticamente tutto, metteno le robe piu'
+
+esoteriche possibili, e magari costruendo una scatola
+
+piu' grande. Ora, visto che io i Black Gate o Cerafine
+
+non so dove andare a trovarli... che si fa?
+
+
+1) La cosa piu' importante sono i due C7 (1.6uF, 250V), 
+
+i caps di accoppiamento (messi in uscita) che lui sostituisce 
+
+con SCR/Angela/Mundorf/Audyn Tinfoil & Polypropylene (che
+
+valori?!) che Digitek non ha.
+
+
+Digitek ha:
+
+1,5 µ F 100/200V 10% CARTA-OLIO JENSEN ALLUMINIUM FOIL 
+
+L.49.500 (l'uno) ASSIALE Ø 30 LUNG.54 mm quindi con problemi 
+
+per metterlo
+
+oppure:
+
+2 µ F 300V 5% CARTA-OLIO PRO - CAP L.161.300 (l'uno)
+
+ASSIALE Ø 30 LUNG.56 mm quindi con problemi per metterlo
+
+oppure:
+
+1,5 µ F 400V 5% MKP SOLEN POLIPROPILENE   METALLIZZATO L.6.200
+
+ASSIALE  Ø  15 LUNG.23  gia' meglio
+
+oppure:
+
+2 µ F 425V 5% POLIPROPILENE TRT INFINI CAP Signature ?S?L.76.100
+
+MKP ASSIALE  Ø 24 LUNG.40 
+
+o infine:
+
+1,5 µ F 160 5% MKP BOX-passo 27 WIMA L.8.900
+
+ma 160V mi pare troppo poco!
+
+
+Come vedi la scelta e' tanta e i soldi anche.
+
+Per questo chiedo a te di decidere!
+
+Io consiglio i TRT (ma e' 2uF invece di 1.6uF, come i PRO-CAP) 
+
+o JENSEN (200V siamo al limite) o semplicemente SOLEN.
+
+
+
+2) Per quanto riguarda C8 (47uF, 450V) abbiamo gia' trovato
+
+il 47µ F 400V 5% MKP ASSIALE  Ø  42 LUNG.58 SOLEN L. 49.500.
+
+Thorsten consiglia un elettrolito piu' grande, Digitex ha:
+
+100 µF 450V ELETTROL. POLARIZZATO SIC SAFCO-SICAL L. 16.000
+
+ ASSIALE Ø 21 LUNG. 42 
+
+oppure:
+
+100 µF 500   Low ESR ELETTROL. POL. JENSEN L.42.800
+
+ VERT. VITI 5mm Ø 35 ALTEZ. 55 
+
+dovrebbe starci ma ha il problema di non avere le gambe
+
+ma le viti: bisogna fare dei ponti.
+
+Quest'ultimo e' consigliato, ma dimmi tu.
+
+
+
+3) Poi consiglia di mettere in parallelo a C8 
+
+un 0.47uF Wima MKP04 e Digitex ha:
+
+0,33 µ F 400 5% MKP  BOX-passo 22 WIMA L.4.700
+
+oppure:
+
+0,47µ F 425V 5% MKP ASSIALE  Ø 12 LUNG.40 TRT Signature ?S? L. 49.700
+
+Tra i 2 e' meglio il secondo... ma il prezzo... Scegli.
+
+
+Sinceramente mi fermerei qui, oltre alla modifica del
+
+potenziometro (per il quale devo comprare resistenze, cavi
+
+per cablaggio -Cardas?- per fare un ponte e ovviamente un po'
+
+di stagno all'argento), perche' come vedi su ogni cosa non
+
+e' detto che si trovi qualcosa di meglio e si puo' spendere
+
+un'infinita' su ogni componente. Inoltre ho gia'
+
+perso un'altra ora e mezza per trovare queste cose!
+
+
+Fammi pure una cortesia.
+
+Chiedi a Walrus come fare per bypassare il potenziometro
+
+che ti hanno messo (come se fosse al massimo): secondo me 
+
+basta unire i cavi viola e bianco a coppie e attaccare a 
+
+questa unione una resistenza da 50K che va a massa, ma 
+
+preferisco che me lo confermino loro.
+
+
+A sto punto rimando tutto a domani mattina, ma fammi sapere
+
+esattamente cosa ti ordino!
+
+
+Agostino.Manzato@osmer.fvg.it
+
+
+</excerpt></x-rich>

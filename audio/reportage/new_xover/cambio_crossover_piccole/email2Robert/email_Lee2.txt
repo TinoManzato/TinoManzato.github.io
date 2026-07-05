@@ -1,0 +1,40 @@
+Dear Robert,
+sorry if this email is too long for you, but I have so many things...!
+First: thank you again for your help in changing the xovers. I have 
+phoned yesterday (saturday morning) when I have finished the work to 
+tell you my joy, but I have not found you. As visible in the first
+picture our living room was a true lab and my wife helped a lot because
+I needed to use two solders to work out your 11awg wires (to sold two 
+of them together in the binding post was almost impossible, so I have 
+not done a good work there). In the second picture you can see how I 
+have placed the new xover inside the Adagio (hope it is well fixed) 
+and in the third how I put the foam in the back of your new tweeter.
+After about 20h of break-in (how many hours I need before to judge the 
+sound?) the very first impression was of a "new voice", with tighter
+mid-low frequencies and trasparent highs. 
+Since the burn-in was too short for listening carefully, today I have
+done a first tranche of measurements.
+The first diagram shows the mid-high response at 50cm in front of the 
+tweeter. Blue line is the left sp. while red line is the right sp.
+The two lines are really similar! From 600 Hz to 20kHz the response
+is flat, a part from a gentle valley at 5.5 kHz.
+Below you can see a hole at 500 Hz. That is even more visible in the
+second diagram (almost 10 dB) taken at 1m from the tweeter. This
+diagram shows also a difference in the 2 sp. between 80 and 200 Hz,
+where the right sp. (red) seems less flat. The third diagram is its
+RTA, where it is possible to see also the 100-200 gap. 
+The following diagram has been taken at 140cm of distance with both
+the sp.s playing: the blue line is the response at tweeter height,
+while the red line has the microphone higher (at 105cm from floor).
+It seems that the 500 Hz hole is not depending from the mic placement.
+In fact, the last measure shows that also in the -veryflat!- impedance 
+curve there is "something" at 500 Hz. I think it has to do with the 
+acoustic load inside the sp., not with the xover.
+To have a better view one would add also the port response, which
+probably partly compensate these 2 "holes". A part these 2 holes the 
+response is very flat and the impedance is very constant. 
+Do you think that the difference that I have found in the 100-200 Hz 
+on the right sp. can be due to something which I have
+made wrong?
+Hope to provide you some listening impression the next week-end.
+Thank you again!

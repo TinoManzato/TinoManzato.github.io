@@ -1,0 +1,1521 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<modsCollection xmlns="http://www.loc.gov/mods/v3">
+<mods ID="Martius2018ES51">
+    <titleInfo>
+        <title>Challenges and recent advances in hail research</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">O</namePart>
+        <namePart type="family">Martius</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Hering</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="family">Kunz</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Mohr</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">L</namePart>
+        <namePart type="family">Nisi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Trefalt</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2018</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Bulletin of the American Meteorological Society</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 0</note>
+    <identifier type="citekey">Martius2018ES51</identifier>
+    <identifier type="doi">10.1175/BAMS-D-17-0207.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-85046449114&amp;doi=10.1175%2fBAMS-D-17-0207.1&amp;partnerID=40&amp;md5=c2e28f1e3868aa5712b04162c6d93ce4</url>
+    </location>
+    <part>
+        <date>2018</date>
+        <detail type="volume"><number>99</number></detail>
+        <detail type="number"><number>3</number></detail>
+        <detail type="page"><number>51</number></detail>
+    </part>
+</mods>
+<mods ID="Manzato20171903">
+    <titleInfo>
+        <title>Behaviour of verification measures for deterministic binary forecasts with respect to random changes and thresholding</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">I</namePart>
+        <namePart type="family">Jolliffe</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2017</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Quarterly Journal of the Royal Meteorological Society</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 2</note>
+    <identifier type="citekey">Manzato20171903</identifier>
+    <identifier type="doi">10.1002/qj.3050</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-85020186376&amp;doi=10.1002%2fqj.3050&amp;partnerID=40&amp;md5=059a73dd4ebf8856a22dda99cf94bdcb</url>
+    </location>
+    <part>
+        <date>2017</date>
+        <detail type="volume"><number>143</number></detail>
+        <detail type="number"><number>705</number></detail>
+        <extent unit="page">
+            <start>1903</start>
+            <end>1915</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Miglietta20162839">
+    <titleInfo>
+        <title>Characteristics and predictability of a supercell during HyMeX SOP1</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">M</namePart>
+        <namePart type="family">Miglietta</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">R</namePart>
+        <namePart type="family">Rotunno</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2016</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Quarterly Journal of the Royal Meteorological Society</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 6</note>
+    <identifier type="citekey">Miglietta20162839</identifier>
+    <identifier type="doi">10.1002/qj.2872</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84983394712&amp;doi=10.1002%2fqj.2872&amp;partnerID=40&amp;md5=bdcfc2b1ed978120b4ce9878d140fa61</url>
+    </location>
+    <part>
+        <date>2016</date>
+        <detail type="volume"><number>142</number></detail>
+        <detail type="number"><number>700</number></detail>
+        <extent unit="page">
+            <start>2839</start>
+            <end>2853</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Davolio2016188">
+    <titleInfo>
+        <title>Mechanisms producing different precipitation patterns over north-eastern Italy</title>
+        <subTitle>insights from HyMeX-SOP1 and previous events</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Davolio</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">VolontĂÂŠ</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Cicogna</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">E</namePart>
+        <namePart type="family">Ferrario</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2016</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Quarterly Journal of the Royal Meteorological Society</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 11</note>
+    <identifier type="citekey">Davolio2016188</identifier>
+    <identifier type="doi">10.1002/qj.2731</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84959010646&amp;doi=10.1002%2fqj.2731&amp;partnerID=40&amp;md5=a6f4fd3056a10c6bbca4dfcfec69d087</url>
+    </location>
+    <part>
+        <date>2016</date>
+        <detail type="volume"><number>142</number></detail>
+        <extent unit="page">
+            <start>188</start>
+            <end>205</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2016465">
+    <titleInfo>
+        <title>6-hour maximum rain in Friuli Venezia Giulia</title>
+        <subTitle>Climatology and ECMWF-based forecasts</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Cicogna</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2016</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 5</note>
+    <identifier type="citekey">Manzato2016465</identifier>
+    <identifier type="doi">10.1016/j.atmosres.2015.07.013</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84954387358&amp;doi=10.1016%2fj.atmosres.2015.07.013&amp;partnerID=40&amp;md5=4dcb9eff233bfaaf60a1e16715cbf73e</url>
+    </location>
+    <part>
+        <date>2016</date>
+        <detail type="volume"><number>169</number></detail>
+        <extent unit="page">
+            <start>465</start>
+            <end>484</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Mecikalski20166374">
+    <titleInfo>
+        <title>Evaluation of geostationary satellite observations and the development of a 1-2h prediction model for future storm intensity</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">J</namePart>
+        <namePart type="given">R</namePart>
+        <namePart type="family">Mecikalski</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">D</namePart>
+        <namePart type="family">Rosenfeld</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2016</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Journal of Geophysical Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 1</note>
+    <identifier type="citekey">Mecikalski20166374</identifier>
+    <identifier type="doi">10.1002/2016JD024768</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84977590091&amp;doi=10.1002%2f2016JD024768&amp;partnerID=40&amp;md5=0138c29e6ce835cf36f81fb110c7026e</url>
+    </location>
+    <part>
+        <date>2016</date>
+        <detail type="volume"><number>121</number></detail>
+        <detail type="number"><number>11</number></detail>
+        <extent unit="page">
+            <start>6374</start>
+            <end>6392</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato201598">
+    <titleInfo>
+        <title>12 September 2012</title>
+        <subTitle>A supercell outbreak in NE Italy?</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Davolio</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">M</namePart>
+        <namePart type="family">Miglietta</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="family">SetvĂĄk</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2015</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 16</note>
+    <identifier type="citekey">Manzato201598</identifier>
+    <identifier type="doi">10.1016/j.atmosres.2014.07.019</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84906771330&amp;doi=10.1016%2fj.atmosres.2014.07.019&amp;partnerID=40&amp;md5=1fdb022f18b470f3fbabc0ea73cd16c7</url>
+    </location>
+    <part>
+        <date>2015</date>
+        <detail type="volume"><number>153</number></detail>
+        <extent unit="page">
+            <start>98</start>
+            <end>118</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Davolio2015261">
+    <titleInfo>
+        <title>The role of the Italian scientific community in the first HyMeX SOP</title>
+        <subTitle>An outstanding multidisciplinary experience</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Davolio</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">R</namePart>
+        <namePart type="family">Ferretti</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">L</namePart>
+        <namePart type="family">Baldini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="family">Casaioli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">D</namePart>
+        <namePart type="family">Cimini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">E</namePart>
+        <namePart type="family">Ferrario</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Gentile</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">N</namePart>
+        <namePart type="family">Loglisci</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">I</namePart>
+        <namePart type="family">Maiello</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Mariani</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">C</namePart>
+        <namePart type="family">Marsigli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="given">S</namePart>
+        <namePart type="family">Marzano</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">M</namePart>
+        <namePart type="family">Miglietta</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Montani</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">G</namePart>
+        <namePart type="family">Panegrossi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="family">Pasi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">E</namePart>
+        <namePart type="family">Pichelli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Zinzi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2015</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Meteorologische Zeitschrift</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 7</note>
+    <identifier type="citekey">Davolio2015261</identifier>
+    <identifier type="doi">10.1127/metz/2015/0624</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84937211833&amp;doi=10.1127%2fmetz%2f2015%2f0624&amp;partnerID=40&amp;md5=0c98240643d9f3435f93f3c41e1d3a9c</url>
+    </location>
+    <part>
+        <date>2015</date>
+        <detail type="volume"><number>24</number></detail>
+        <detail type="number"><number>3</number></detail>
+        <extent unit="page">
+            <start>261</start>
+            <end>267</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Ferretti20141953">
+    <titleInfo>
+        <title>Overview of the first HyMeX Special Observation Period over Italy</title>
+        <subTitle>Observations and model results</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">R</namePart>
+        <namePart type="family">Ferretti</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">E</namePart>
+        <namePart type="family">Pichelli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Gentile</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">I</namePart>
+        <namePart type="family">Maiello</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">D</namePart>
+        <namePart type="family">Cimini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Davolio</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">M</namePart>
+        <namePart type="family">Miglietta</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">G</namePart>
+        <namePart type="family">Panegrossi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">L</namePart>
+        <namePart type="family">Baldini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="family">Pasi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="given">S</namePart>
+        <namePart type="family">Marzano</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Zinzi</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Mariani</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="family">Casaioli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">G</namePart>
+        <namePart type="family">Bartolini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">N</namePart>
+        <namePart type="family">Loglisci</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Montani</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">C</namePart>
+        <namePart type="family">Marsigli</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="given">E</namePart>
+        <namePart type="family">Ferrario</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">V</namePart>
+        <namePart type="family">Colaiuda</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">R</namePart>
+        <namePart type="family">Rotunno</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2014</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Hydrology and Earth System Sciences</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 29</note>
+    <identifier type="citekey">Ferretti20141953</identifier>
+    <identifier type="doi">10.5194/hess-18-1953-2014</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84906738331&amp;doi=10.5194%2fhess-18-1953-2014&amp;partnerID=40&amp;md5=34c6c5063f3dcd96c1a2f6987128da08</url>
+    </location>
+    <part>
+        <date>2014</date>
+        <detail type="volume"><number>18</number></detail>
+        <detail type="number"><number>5</number></detail>
+        <extent unit="page">
+            <start>1953</start>
+            <end>1977</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Feudale20142651">
+    <titleInfo>
+        <title>Cloud-to-ground lightning distribution and its relationship with orography and anthropogenic emissions in the Po Valley</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">L</namePart>
+        <namePart type="family">Feudale</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2014</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Journal of Applied Meteorology and Climatology</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 9</note>
+    <identifier type="citekey">Feudale20142651</identifier>
+    <identifier type="doi">10.1175/JAMC-D-14-0037.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84928318859&amp;doi=10.1175%2fJAMC-D-14-0037.1&amp;partnerID=40&amp;md5=2dcee89b985ea986e2a54c897c097e0f</url>
+    </location>
+    <part>
+        <date>2014</date>
+        <detail type="volume"><number>53</number></detail>
+        <detail type="number"><number>12</number></detail>
+        <extent unit="page">
+            <start>2651</start>
+            <end>2670</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Ukkonen20142335">
+    <titleInfo>
+        <title>Evaluation of thunderstorm predictors for Finland using reanalyses and neural networks</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">P</namePart>
+        <namePart type="family">Ukkonen</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">MĂ¤kelĂ¤</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2014</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Journal of Applied Meteorology and Climatology</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 0</note>
+    <identifier type="citekey">Ukkonen20142335</identifier>
+    <identifier type="doi">10.1175/JAMC-D-16-0361.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-85027438494&amp;doi=10.1175%2fJAMC-D-16-0361.1&amp;partnerID=40&amp;md5=bcb39ce58e63f2411d0b092348989172</url>
+    </location>
+    <part>
+        <date>2014</date>
+        <detail type="volume"><number>56</number></detail>
+        <detail type="number"><number>8</number></detail>
+        <extent unit="page">
+            <start>2335</start>
+            <end>2352</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Pucillo201331">
+    <titleInfo>
+        <title>Usefulness and skill of station-derived predictors in forecasting storm occurrence and intensity</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Pucillo</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2013</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 2</note>
+    <identifier type="citekey">Pucillo201331</identifier>
+    <identifier type="doi">10.1016/j.atmosres.2012.10.016</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84874361075&amp;doi=10.1016%2fj.atmosres.2012.10.016&amp;partnerID=40&amp;md5=c296d2509081e79934a662d3b418179d</url>
+    </location>
+    <part>
+        <date>2013</date>
+        <detail type="volume"><number>123</number></detail>
+        <extent unit="page">
+            <start>31</start>
+            <end>47</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato20133">
+    <titleInfo>
+        <title>Hail in Northeast Italy</title>
+        <subTitle>A neural network ensemble forecast using sounding-derived indices</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2013</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Weather and Forecasting</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 9</note>
+    <identifier type="citekey">Manzato20133</identifier>
+    <identifier type="doi">10.1175/WAF-D-12-00034.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84874876345&amp;doi=10.1175%2fWAF-D-12-00034.1&amp;partnerID=40&amp;md5=91178a95f8a5ddf595c75d8998c9baca</url>
+    </location>
+    <part>
+        <date>2013</date>
+        <detail type="volume"><number>28</number></detail>
+        <detail type="number"><number>1</number></detail>
+        <extent unit="page">
+            <start>3</start>
+            <end>28</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2012449">
+    <titleInfo>
+        <title>Hail in northeast italy</title>
+        <subTitle>Climatology and bivariate analysis with the sounding-derived indices</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2012</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Journal of Applied Meteorology and Climatology</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 24</note>
+    <identifier type="citekey">Manzato2012449</identifier>
+    <identifier type="doi">10.1175/JAMC-D-10-05012.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-84861705160&amp;doi=10.1175%2fJAMC-D-10-05012.1&amp;partnerID=40&amp;md5=4a13bea2a001dbdc4d5accb032fcd464</url>
+    </location>
+    <part>
+        <date>2012</date>
+        <detail type="volume"><number>51</number></detail>
+        <detail type="number"><number>3</number></detail>
+        <extent unit="page">
+            <start>449</start>
+            <end>467</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2008477">
+    <titleInfo>
+        <title>A verification of numerical model forecasts for sounding-derived indices above Udine, northeast Italy</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2008</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Weather and Forecasting</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 4</note>
+    <identifier type="citekey">Manzato2008477</identifier>
+    <identifier type="doi">10.1175/2007WAF2007018.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-48649085852&amp;doi=10.1175%2f2007WAF2007018.1&amp;partnerID=40&amp;md5=224ed33b9fbeed816c422e35c881f69b</url>
+    </location>
+    <part>
+        <date>2008</date>
+        <detail type="volume"><number>23</number></detail>
+        <detail type="number"><number>3</number></detail>
+        <extent unit="page">
+            <start>477</start>
+            <end>495</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato20071148">
+    <titleInfo>
+        <title>A note on the maximum Pierce skill score</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2007</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Weather and Forecasting</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 19</note>
+    <identifier type="citekey">Manzato20071148</identifier>
+    <identifier type="doi">10.1175/WAF1041.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-35948952071&amp;doi=10.1175%2fWAF1041.1&amp;partnerID=40&amp;md5=f9ddce5e18c5e779e61404e4ded01add</url>
+    </location>
+    <part>
+        <date>2007</date>
+        <detail type="volume"><number>22</number></detail>
+        <detail type="number"><number>5</number></detail>
+        <extent unit="page">
+            <start>1148</start>
+            <end>1154</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2007349">
+    <titleInfo>
+        <title>Sounding-derived indices for neural network based short-term thunderstorm and rainfall forecasts</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2007</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 29</note>
+    <identifier type="citekey">Manzato2007349</identifier>
+    <identifier type="doi">10.1016/j.atmosres.2005.10.021</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-33846622899&amp;doi=10.1016%2fj.atmosres.2005.10.021&amp;partnerID=40&amp;md5=2bdd90499b7d733bc837bf501cd4987a</url>
+    </location>
+    <part>
+        <date>2007</date>
+        <detail type="volume"><number>83</number></detail>
+        <detail type="number"><number>2-4 SPEC. ISS.</number></detail>
+        <extent unit="page">
+            <start>349</start>
+            <end>365</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2007336">
+    <titleInfo>
+        <title>The 6Â h climatology of thunderstorms and rainfalls in the Friuli Venezia Giulia Plain</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2007</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 19</note>
+    <identifier type="citekey">Manzato2007336</identifier>
+    <identifier type="doi">10.1016/j.atmosres.2005.08.013</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-33846565042&amp;doi=10.1016%2fj.atmosres.2005.08.013&amp;partnerID=40&amp;md5=dd5be3a7d8cec2068a4fa602f5c20b90</url>
+    </location>
+    <part>
+        <date>2007</date>
+        <detail type="volume"><number>83</number></detail>
+        <detail type="number"><number>2-4 SPEC. ISS.</number></detail>
+        <extent unit="page">
+            <start>336</start>
+            <end>348</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2005896">
+    <titleInfo>
+        <title>The use of sounding-derived indices for a neural network short-term thunderstorm forecast</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2005</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Weather and Forecasting</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 28</note>
+    <identifier type="citekey">Manzato2005896</identifier>
+    <identifier type="doi">10.1175/WAF898.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-32044452666&amp;doi=10.1175%2fWAF898.1&amp;partnerID=40&amp;md5=b75b73a23bfa863e739e61003204e63f</url>
+    </location>
+    <part>
+        <date>2005</date>
+        <detail type="volume"><number>20</number></detail>
+        <detail type="number"><number>6</number></detail>
+        <extent unit="page">
+            <start>896</start>
+            <end>917</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2005918">
+    <titleInfo>
+        <title>An odds ratio parameterization for ROC diagram and skill score indices</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2005</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Weather and Forecasting</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 13</note>
+    <identifier type="citekey">Manzato2005918</identifier>
+    <identifier type="doi">10.1175/WAF899.1</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-32044473047&amp;doi=10.1175%2fWAF899.1&amp;partnerID=40&amp;md5=49f8dc5c5987c04fa9bf6c8c81f845f9</url>
+    </location>
+    <part>
+        <date>2005</date>
+        <detail type="volume"><number>20</number></detail>
+        <detail type="number"><number>6</number></detail>
+        <extent unit="page">
+            <start>918</start>
+            <end>930</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2003417">
+    <titleInfo>
+        <title>A climatology of instability indices derived from Friuli Venezia Giulia soundings, using three different methods</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2003</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 37</note>
+    <identifier type="citekey">Manzato2003417</identifier>
+    <identifier type="doi">10.1016/S0169-8095(03)00058-9</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-0141849903&amp;doi=10.1016%2fS0169-8095%2803%2900058-9&amp;partnerID=40&amp;md5=ea09ed11e87df3b0dc7fb12c39a41829</url>
+    </location>
+    <part>
+        <date>2003</date>
+        <detail type="volume"><number>67-68</number></detail>
+        <extent unit="page">
+            <start>417</start>
+            <end>454</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Manzato2003455">
+    <titleInfo>
+        <title>Evaluating the sounding instability with the Lifted Parcel Theory</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">G</namePart>
+        <namePart type="family">Morgan</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2003</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 26</note>
+    <identifier type="citekey">Manzato2003455</identifier>
+    <identifier type="doi">10.1016/S0169-8095(03)00059-0</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-0141626435&amp;doi=10.1016%2fS0169-8095%2803%2900059-0&amp;partnerID=40&amp;md5=7cba7a6a0bd689da5c1b2adc23197235</url>
+    </location>
+    <part>
+        <date>2003</date>
+        <detail type="volume"><number>67-68</number></detail>
+        <extent unit="page">
+            <start>455</start>
+            <end>473</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Bertato20033">
+    <titleInfo>
+        <title>An interesting case of tornado in Friuli-Northeastern Italy</title>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">M</namePart>
+        <namePart type="family">Bertato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">D</namePart>
+        <namePart type="given">B</namePart>
+        <namePart type="family">Giaiotti</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="family">Stel</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2003</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 10</note>
+    <identifier type="citekey">Bertato20033</identifier>
+    <identifier type="doi">10.1016/S0169-8095(03)00043-7</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-0141626500&amp;doi=10.1016%2fS0169-8095%2803%2900043-7&amp;partnerID=40&amp;md5=3c2225ca487baddfed96db00c8d7df3f</url>
+    </location>
+    <part>
+        <date>2003</date>
+        <detail type="volume"><number>67-68</number></detail>
+        <extent unit="page">
+            <start>3</start>
+            <end>21</end>
+        </extent>
+    </part>
+</mods>
+<mods ID="Bechini2000213">
+    <titleInfo>
+        <title>The June 4th 1999 severe weather episode in San Quirino, Italy</title>
+        <subTitle>A tornado event?</subTitle>
+    </titleInfo>
+    <name type="personal">
+        <namePart type="given">R</namePart>
+        <namePart type="family">Bechini</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">D</namePart>
+        <namePart type="family">Giaiotti</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">A</namePart>
+        <namePart type="family">Manzato</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">F</namePart>
+        <namePart type="family">Stel</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <name type="personal">
+        <namePart type="given">S</namePart>
+        <namePart type="family">Micheletti</namePart>
+        <role>
+            <roleTerm authority="marcrelator" type="text">author</roleTerm>
+        </role>
+    </name>
+    <originInfo>
+        <dateIssued>2000</dateIssued>
+    </originInfo>
+    <typeOfResource>text</typeOfResource>
+    <relatedItem type="host">
+        <titleInfo>
+            <title>Atmospheric Research</title>
+        </titleInfo>
+        <originInfo>
+            <issuance>continuing</issuance>
+        </originInfo>
+        <genre authority="marcgt">periodical</genre>
+        <genre>academic journal</genre>
+    </relatedItem>
+    <note>cited By 14</note>
+    <identifier type="citekey">Bechini2000213</identifier>
+    <identifier type="doi">10.1016/S0169-8095(00)00074-0</identifier>
+    <location>
+        <url>https://www.scopus.com/inward/record.uri?eid=2-s2.0-0034457674&amp;doi=10.1016%2fS0169-8095%2800%2900074-0&amp;partnerID=40&amp;md5=d671b16a41818038a74cc08753002f8a</url>
+    </location>
+    <part>
+        <date>2000</date>
+        <detail type="volume"><number>56</number></detail>
+        <detail type="number"><number>1-4</number></detail>
+        <extent unit="page">
+            <start>213</start>
+            <end>232</end>
+        </extent>
+    </part>
+</mods>
+</modsCollection>
